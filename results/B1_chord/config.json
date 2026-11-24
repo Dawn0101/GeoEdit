@@ -1,0 +1,7 @@
+{
+  "run_id": "B1_chord",
+  "pred_root": "/data/lx/Code/GeoEdit/cache/images/B1_chord",
+  "pie_root": "/data/lx/Dataset/PIE-Bench-Dataset",
+  "seed": 42,
+  "metrics": "PnPInversion evaluation/matrics_calculator.py (unmodified)"
+}

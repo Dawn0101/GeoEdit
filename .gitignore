@@ -1,0 +1,21 @@
+# Regenerable, large: 700 cached proposals (282 MB). Rebuild with scripts/build_cache.py.
+cache/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Vendored repos are tracked as files, not as nested git repos
+third_party/*/.git
+third_party/*/.gitignore
+
+# Editors
+.vscode/
+.idea/
+
+# 未授权再分发的第三方代码（需要时用 third_party/fetch.sh 拉取）
+third_party/PnPInversion/
