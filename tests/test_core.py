@@ -1,59 +1,18 @@
-"""CPU tests that do not need SD-Turbo weights (T-M1, T-M2, T-E1..T-E4, T-H1, T-H2, T-D*, T-S*)."""
+"""CPU tests that do not need SD-Turbo weights (T-M1, T-M2, T-E1, T-D*, T-S1, T-S2).
+
+v2's T-E2..T-E4 (Picard) and T-H1/T-H2 (halo) went with those modules to the ``v2`` branch;
+P3's own tests are in ``test_p3.py``.
+"""
 
 from __future__ import annotations
 
 import numpy as np
 import pytest
 import torch
-from scipy import ndimage
 
-from geoedit import edit_ops, halo, stats
+from geoedit import stats
 from geoedit.data import PIEDataset, build_dist64, build_mask64
-from geoedit.edit_ops import make_eps, picard, residual, source_mu, lam_edit, image_seed
-
-
-# --------------------------------------------------------------------------- #
-# A fake Gaussian denoiser: mu_c(z) = mu_c + W (z/a - mu_c)   (doc §1 / T-E4)
-# --------------------------------------------------------------------------- #
-class FakeGaussianModel:
-    def __init__(self, mu_src, mu_tar, w_diag, t=0.9, num_timesteps=1000):
-        self.mu = {"src": mu_src, "tar": mu_tar}
-        self.w = w_diag
-        self.num_train_timesteps = num_timesteps
-        self.max_timestep = num_timesteps - 1
-        self.prediction_type = "epsilon"
-        self.nfe = 0
-        abar = 0.0125
-        self.abar = torch.full((num_timesteps,), abar)
-        self.alphas_cumprod = self.abar
-
-    def timestep_index(self, t):
-        return int(round(t * self.max_timestep))
-
-    def ab(self, t):
-        a = float(self.abar[self.timestep_index(t)].sqrt())
-        b = float((1 - self.abar[self.timestep_index(t)]).sqrt())
-        return a, b
-
-    def x0_pred(self, z, t, emb):
-        self.nfe += 1
-        a, b = self.ab(t if not torch.is_tensor(t) else float(t[0]))
-        which = "src" if float(emb.reshape(-1)[0]) == 0.0 else "tar"
-        mu = self.mu[which]
-        return mu + self.w * (z / a - mu)
-
-
-def _fake_case(dim=8, seed=0):
-    gen = torch.Generator().manual_seed(seed)
-    mu_src = torch.randn(dim, 1, 1, 1, generator=gen)
-    mu_tar = mu_src + 0.5 * torch.randn(dim, 1, 1, 1, generator=gen)
-    w = torch.linspace(0.2, 0.9, dim).view(dim, 1, 1, 1)
-    model = FakeGaussianModel(mu_src, mu_tar, w)
-    x_s = torch.randn(dim, 1, 1, 1, generator=gen)
-    eps = torch.randn(dim, 1, 1, 1, generator=gen)
-    emb_src = torch.zeros(1, 1, 1)
-    emb_tar = torch.ones(1, 1, 1)
-    return model, x_s, eps, emb_src, emb_tar, mu_src, mu_tar, w
+from geoedit.edit_ops import image_seed, make_eps
 
 
 # --------------------------------------------------------------------------- #
@@ -85,7 +44,7 @@ def test_t_m2_x0_conversion_roundtrip(prediction_type):
 
 
 # --------------------------------------------------------------------------- #
-# T-E1..T-E4
+# T-E1
 # --------------------------------------------------------------------------- #
 def test_t_e1_eps_is_shared_and_deterministic():
     e1 = make_eps("000000000001", 0, torch.device("cpu"), torch.float32)
@@ -94,62 +53,6 @@ def test_t_e1_eps_is_shared_and_deterministic():
     assert torch.equal(e1, e2)
     assert not torch.equal(e1, e3)
     assert image_seed("a", 0) != image_seed("b", 0)
-
-
-def test_t_e2_picard_k1_equals_lam1():
-    model, x_s, eps, emb_src, emb_tar, *_ = _fake_case()
-    res = residual(model, x_s, 0.9, emb_src, emb_tar, eps)
-    one_step = lam_edit(x_s, res, 1.0)
-    result = picard(model, x_s, 0.9, emb_src, emb_tar, eps, k_max=1)
-    assert torch.allclose(one_step, x_s + result.delta(1), atol=1e-6)
-
-
-def test_t_e3_picard_nfe_is_one_plus_k():
-    model, x_s, eps, emb_src, emb_tar, *_ = _fake_case()
-    for k in (1, 3, 6):
-        model.nfe = 0
-        result = picard(model, x_s, 0.9, emb_src, emb_tar, eps, k_max=k)
-        assert model.nfe == 1 + k
-        assert result.nfe == 1 + k
-
-
-def test_t_e4_picard_error_equals_w_power_k():
-    model, x_s, eps, emb_src, emb_tar, mu_src, mu_tar, w = _fake_case(dim=8)
-    delta_mu = mu_tar - mu_src
-    for k in (1, 2, 3, 5):
-        result = picard(model, x_s, 0.9, emb_src, emb_tar, eps, k_max=k)
-        error = delta_mu - result.delta(k)
-        expected = (w ** k) * delta_mu
-        assert torch.allclose(error, expected, rtol=1e-4, atol=1e-6), f"K={k}: {error.flatten()[:3]} vs {expected.flatten()[:3]}"
-
-
-# --------------------------------------------------------------------------- #
-# T-H1 / T-H2
-# --------------------------------------------------------------------------- #
-def _mask_and_dist(size=64, lo=20, hi=40):
-    mask = np.zeros((size, size), np.float32)
-    mask[lo:hi, lo + 4:hi + 4] = 1.0
-    return mask, build_dist64(mask)
-
-
-def test_t_h1_synthetic_halo_is_detected():
-    mask, dist = _mask_and_dist()
-    bump = torch.from_numpy(mask)[None, None] * 0.1
-    res = bump - 0.1 * halo.gaussian_blur(bump, 3.0)
-    value, n_pix = halo.rho(res, mask, dist, band=(2, 6), sigma=3.0)
-    assert n_pix > 50
-    assert value < -0.5, f"rho={value}"
-
-
-def test_t_h2_white_noise_has_no_halo():
-    mask, dist = _mask_and_dist()
-    rng = np.random.default_rng(7)
-    values = []
-    for _ in range(100):
-        res = torch.from_numpy(rng.standard_normal((1, 4, 64, 64)).astype(np.float32))
-        value, _ = halo.rho(res, mask, dist, band=(2, 6), sigma=3.0)
-        values.append(value)
-    assert abs(float(np.nanmean(values))) < 0.05
 
 
 # --------------------------------------------------------------------------- #

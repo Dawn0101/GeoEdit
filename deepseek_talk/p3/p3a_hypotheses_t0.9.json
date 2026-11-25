@@ -1,0 +1,1120 @@
+{
+ "created": "2026-11-25T21:06:33",
+ "n_images_main": 540,
+ "n_boot": 1000,
+ "H3d": {
+  "rule": "one-sided paired Wilcoxon of frac_random(out) - frac_random(in) > 0, p < 0.01",
+  "status": "SUPPORTED",
+  "detail": {
+   "median_diff": 0.007551096729912554,
+   "stat": 75469.0,
+   "p": 2.4921159966413635e-08,
+   "n": 484
+  }
+ },
+ "t0.9": {
+  "anchors": {
+   "0.75": {
+    "lambda": 0.75,
+    "clip": 19.88100248531059,
+    "n_images": 540
+   },
+   "1": {
+    "lambda": 1.0,
+    "clip": 19.95672626627816,
+    "n_images": 540
+   }
+  },
+  "curve_match": {
+   "0.75": {
+    "V0": {
+     "delta": 0.0,
+     "lo": 0.0,
+     "hi": 0.0,
+     "psnr_at_anchor": 22.319073604158135,
+     "out_of_range": false,
+     "n_boot": 1000
+    },
+    "V1": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 598
+    },
+    "V10": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 26
+    },
+    "V11": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 204
+    },
+    "V2": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 147
+    },
+    "V3": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 98
+    },
+    "V4": {
+     "delta": 0.8849954475653412,
+     "lo": 0.6172649610682563,
+     "hi": 7.50307408804268,
+     "psnr_at_anchor": 23.204069051723476,
+     "out_of_range": false,
+     "n_boot": 550
+    },
+    "V4c05": {
+     "delta": -3.0124665211953143,
+     "lo": -4.7192411253089155,
+     "hi": 4.250167790592244,
+     "psnr_at_anchor": 19.30660708296282,
+     "out_of_range": false,
+     "n_boot": 988
+    },
+    "V4c2": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 51
+    },
+    "V5": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 457
+    },
+    "V6": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 425
+    },
+    "V7": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 2
+    },
+    "V8": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 0
+    }
+   },
+   "1": {
+    "V0": {
+     "delta": 0.0,
+     "lo": 0.0,
+     "hi": 0.0,
+     "psnr_at_anchor": 20.24531130554262,
+     "out_of_range": false,
+     "n_boot": 1000
+    },
+    "V1": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 285
+    },
+    "V10": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 8
+    },
+    "V11": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 78
+    },
+    "V2": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 23
+    },
+    "V3": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 40
+    },
+    "V4": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 271
+    },
+    "V4c05": {
+     "delta": -0.5303112560961019,
+     "lo": -2.619900166051284,
+     "hi": 5.553011953948791,
+     "psnr_at_anchor": 19.71500004944652,
+     "out_of_range": false,
+     "n_boot": 980
+    },
+    "V4c2": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 17
+    },
+    "V5": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 256
+    },
+    "V6": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 196
+    },
+    "V7": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 1
+    },
+    "V8": {
+     "delta": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "psnr_at_anchor": NaN,
+     "out_of_range": true,
+     "n_boot": 0
+    }
+   }
+  },
+  "H3b": {
+   "rule": "CI of dPSNR(V4 - V0) > 0 at both anchors",
+   "status": "NOT_TESTABLE",
+   "reason": "designed anchors lie outside V4's CLIP range; the hypothesis cannot be evaluated without extrapolation (post-hoc anchors are in posthoc.bracket)",
+   "detail": [
+    {
+     "point": 2.873200250844188,
+     "lo": 0.6172649610682563,
+     "hi": 7.50307408804268,
+     "n": 550,
+     "out_of_range": false
+    },
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    }
+   ]
+  },
+  "H3c": {
+   "rule": "CI of dPSNR(V4 - V7) and dPSNR(V4 - V8) both > 0; REFUTED if either CI < 0",
+   "vs_V7": [
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    },
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    }
+   ],
+   "vs_V8": [
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    },
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    }
+   ],
+   "status": "NOT_TESTABLE",
+   "reason": "one of V4 / V7 / V8 cannot reach the designed anchor; not testable without extrapolation"
+  },
+  "gap_closure": [
+   {
+    "lambda": 0.75,
+    "n": 147,
+    "point": 0.3320129900984269,
+    "lo": 0.05106101979333872,
+    "hi": 0.9299977106926404
+   },
+   {
+    "lambda": 1.0,
+    "n": 23,
+    "point": 0.4036979173822941,
+    "lo": 0.2606642290052907,
+    "hi": 0.859704725916888
+   }
+  ],
+  "extras": {
+   "V1_vs_V4": [
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    },
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    }
+   ],
+   "V5_vs_V4": [
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    },
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    }
+   ],
+   "V6_vs_V4": [
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    },
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    }
+   ],
+   "V10_vs_V4": [
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    },
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    }
+   ],
+   "V11_vs_V4": [
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    },
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    }
+   ],
+   "V4c05_vs_V4": [
+    {
+     "point": -3.3367569697515997,
+     "lo": -9.268409455069015,
+     "hi": 2.5203954321990074,
+     "n": 550,
+     "out_of_range": false
+    },
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    }
+   ],
+   "V4c2_vs_V4": [
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    },
+    {
+     "point": NaN,
+     "lo": NaN,
+     "hi": NaN,
+     "n": 0,
+     "out_of_range": true
+    }
+   ]
+  },
+  "posthoc": {
+   "note": "not pre-registered. The masked variants cannot reach the pre-registered CLIP anchors, so the frontier is also read at matched background PSNR.",
+   "clip_at_psnr": {
+    "25": {
+     "V0": {
+      "clip": 19.700689579696977,
+      "lo": 19.29202165031459,
+      "hi": 20.12219956484708,
+      "out_of_range": false
+     },
+     "V1": {
+      "clip": 19.84769574872808,
+      "lo": 19.466085485749744,
+      "hi": 20.255376587491757,
+      "out_of_range": false
+     },
+     "V10": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V11": {
+      "clip": 19.782775460130694,
+      "lo": 19.401612028668747,
+      "hi": 20.195671957970625,
+      "out_of_range": false
+     },
+     "V2": {
+      "clip": 19.37833543492597,
+      "lo": 19.000672936162232,
+      "hi": 19.762226995536874,
+      "out_of_range": false
+     },
+     "V3": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V4": {
+      "clip": 19.822932698524337,
+      "lo": 19.43705368565903,
+      "hi": 20.22999169028015,
+      "out_of_range": false
+     },
+     "V4c05": {
+      "clip": 19.79272718729972,
+      "lo": 19.377219517407713,
+      "hi": 20.192681645131266,
+      "out_of_range": false
+     },
+     "V4c2": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V5": {
+      "clip": 19.86760223389696,
+      "lo": 19.443047757935275,
+      "hi": 20.245327115721643,
+      "out_of_range": false
+     },
+     "V6": {
+      "clip": 19.802579002222448,
+      "lo": 19.42869130810853,
+      "hi": 20.21937187300514,
+      "out_of_range": false
+     },
+     "V7": {
+      "clip": 19.37867700817054,
+      "lo": 19.01061613586595,
+      "hi": 19.763045959647314,
+      "out_of_range": false
+     },
+     "V8": {
+      "clip": 19.29936938769938,
+      "lo": 18.916799344988625,
+      "hi": 19.687946094224035,
+      "out_of_range": false
+     }
+    },
+    "28": {
+     "V0": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V1": {
+      "clip": 19.703079665631165,
+      "lo": 19.2961977514353,
+      "hi": 20.111077471303787,
+      "out_of_range": false
+     },
+     "V10": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V11": {
+      "clip": 19.719957919925342,
+      "lo": 19.31729827319861,
+      "hi": 20.12668186580645,
+      "out_of_range": false
+     },
+     "V2": {
+      "clip": 19.69466671904016,
+      "lo": 19.307770953680212,
+      "hi": 20.10321476708641,
+      "out_of_range": false
+     },
+     "V3": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V4": {
+      "clip": 19.722221006744324,
+      "lo": 19.323029456488314,
+      "hi": 20.138403548466815,
+      "out_of_range": false
+     },
+     "V4c05": {
+      "clip": 19.69217206099828,
+      "lo": 19.27812831144484,
+      "hi": 20.11325626145302,
+      "out_of_range": false
+     },
+     "V4c2": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V5": {
+      "clip": 19.80908689952503,
+      "lo": 19.40222862847867,
+      "hi": 20.224678480462128,
+      "out_of_range": false
+     },
+     "V6": {
+      "clip": 19.655755284103545,
+      "lo": 19.246893392454446,
+      "hi": 20.074010594748206,
+      "out_of_range": false
+     },
+     "V7": {
+      "clip": 19.504516583184078,
+      "lo": 19.12288157031501,
+      "hi": 19.910764284602834,
+      "out_of_range": false
+     },
+     "V8": {
+      "clip": 19.417189135715898,
+      "lo": 19.02672284307185,
+      "hi": 19.817104363776988,
+      "out_of_range": false
+     }
+    },
+    "31": {
+     "V0": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V1": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V10": {
+      "clip": 19.62807111116125,
+      "lo": 19.209250367750503,
+      "hi": 20.027293088268813,
+      "out_of_range": false
+     },
+     "V11": {
+      "clip": 19.650723394388006,
+      "lo": 19.258955929279182,
+      "hi": 20.051649876318734,
+      "out_of_range": false
+     },
+     "V2": {
+      "clip": 19.80234432084295,
+      "lo": 19.401496395985102,
+      "hi": 20.2099718716766,
+      "out_of_range": false
+     },
+     "V3": {
+      "clip": 19.653561299769247,
+      "lo": 19.271360799903487,
+      "hi": 20.04972559352585,
+      "out_of_range": false
+     },
+     "V4": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V4c05": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V4c2": {
+      "clip": 19.67308696028187,
+      "lo": 19.25443970472042,
+      "hi": 20.072057152268826,
+      "out_of_range": false
+     },
+     "V5": {
+      "clip": 19.66400611984227,
+      "lo": 19.25685360860513,
+      "hi": 20.066453865692445,
+      "out_of_range": false
+     },
+     "V6": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V7": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V8": {
+      "clip": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     }
+    }
+   },
+   "bracket_H3b": {
+    "common_clip_range": [
+     19.636255047939443,
+     19.89150628955276
+    ],
+    "members": [
+     "V0",
+     "V4"
+    ],
+    "note": "anchors inside the CLIP range that every compared variant reaches; post-hoc, because the pre-registered anchors sit above it",
+    "anchors": {
+     "19.700": {
+      "V0": {
+       "psnr": 24.541008184724895,
+       "lo": 14.475333936261904,
+       "hi": 24.77237562743654,
+       "out_of_range": false
+      },
+      "V1": {
+       "psnr": 21.00107274918566,
+       "lo": 17.616073616145023,
+       "hi": 28.235479499207848,
+       "out_of_range": false
+      },
+      "V10": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V11": {
+       "psnr": 29.095036912934397,
+       "lo": 24.17777381813581,
+       "hi": 31.19203622513831,
+       "out_of_range": false
+      },
+      "V2": {
+       "psnr": 29.5550216374762,
+       "lo": 25.083022425052654,
+       "hi": 31.915412416733577,
+       "out_of_range": false
+      },
+      "V3": {
+       "psnr": 31.28637298223542,
+       "lo": 29.754870164680877,
+       "hi": 32.55445283039066,
+       "out_of_range": false
+      },
+      "V4": {
+       "psnr": 28.858373901560093,
+       "lo": 23.102135521078836,
+       "hi": 30.878502300784955,
+       "out_of_range": false
+      },
+      "V4c05": {
+       "psnr": 27.801562756639132,
+       "lo": 17.845891370778602,
+       "hi": 28.309740363048185,
+       "out_of_range": false
+      },
+      "V4c2": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V5": {
+       "psnr": 30.303601848678092,
+       "lo": 25.515366487891527,
+       "hi": 31.308862228454526,
+       "out_of_range": false
+      },
+      "V6": {
+       "psnr": 27.110493333694514,
+       "lo": 22.97124562405033,
+       "hi": 30.63474944149597,
+       "out_of_range": false
+      },
+      "V7": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V8": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      }
+     },
+     "19.764": {
+      "V0": {
+       "psnr": 20.913001601166908,
+       "lo": 14.672797893416496,
+       "hi": 24.804838786307503,
+       "out_of_range": false
+      },
+      "V1": {
+       "psnr": 23.812345801678557,
+       "lo": 17.788831688691346,
+       "hi": 28.24328938605029,
+       "out_of_range": false
+      },
+      "V10": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V11": {
+       "psnr": 25.11590256340851,
+       "lo": 23.902445811517712,
+       "hi": 30.924802979808074,
+       "out_of_range": false
+      },
+      "V2": {
+       "psnr": 29.45721776862619,
+       "lo": 25.52628302421481,
+       "hi": 31.9454946902621,
+       "out_of_range": false
+      },
+      "V3": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V4": {
+       "psnr": 26.566675577944192,
+       "lo": 23.105935801198676,
+       "hi": 30.729732691327822,
+       "out_of_range": false
+      },
+      "V4c05": {
+       "psnr": 26.08417263389516,
+       "lo": 17.515464643303122,
+       "hi": 28.012555895216913,
+       "out_of_range": false
+      },
+      "V4c2": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V5": {
+       "psnr": 29.040494267953612,
+       "lo": 25.36847946004596,
+       "hi": 31.4608054745678,
+       "out_of_range": false
+      },
+      "V6": {
+       "psnr": 25.867508136751027,
+       "lo": 23.118687950959078,
+       "hi": 30.5332224188558,
+       "out_of_range": false
+      },
+      "V7": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V8": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      }
+     },
+     "19.828": {
+      "V0": {
+       "psnr": 17.28499501760892,
+       "lo": 14.724913064693665,
+       "hi": 24.63220583926837,
+       "out_of_range": false
+      },
+      "V1": {
+       "psnr": 25.554470035735754,
+       "lo": 18.201738818417418,
+       "hi": 28.2625097928053,
+       "out_of_range": false
+      },
+      "V10": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V11": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V2": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V3": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V4": {
+       "psnr": 24.852762792223835,
+       "lo": 23.089498433118006,
+       "hi": 30.811739005167837,
+       "out_of_range": false
+      },
+      "V4c05": {
+       "psnr": 22.931146618417145,
+       "lo": 17.66518948856993,
+       "hi": 28.3878780031803,
+       "out_of_range": false
+      },
+      "V4c2": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V5": {
+       "psnr": 27.527241822274956,
+       "lo": 25.22708872001269,
+       "hi": 31.41317743850534,
+       "out_of_range": false
+      },
+      "V6": {
+       "psnr": 24.045374986684415,
+       "lo": 22.96591259828848,
+       "hi": 29.983498548755172,
+       "out_of_range": false
+      },
+      "V7": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      },
+      "V8": {
+       "psnr": NaN,
+       "lo": NaN,
+       "hi": NaN,
+       "out_of_range": true
+      }
+     }
+    }
+   },
+   "bracket_H3c": {
+    "common_clip_range": null,
+    "members": [
+     "V0",
+     "V4",
+     "V7",
+     "V8"
+    ]
+   },
+   "whole_clip": {
+    "0.75": {
+     "V0": {
+      "delta": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "out_of_range": false
+     },
+     "V1": {
+      "delta": -1.6820861150262019,
+      "lo": -2.7689671064319796,
+      "hi": 1.776133962167178,
+      "out_of_range": false
+     },
+     "V10": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V11": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V2": {
+      "delta": 7.824806266669949,
+      "lo": 4.824179334673407,
+      "hi": 8.657313800620921,
+      "out_of_range": false
+     },
+     "V3": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V4": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V4c05": {
+      "delta": 0.9321643634677024,
+      "lo": -4.137634116565375,
+      "hi": 1.443805964690389,
+      "out_of_range": false
+     },
+     "V4c2": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V5": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V6": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V7": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V8": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     }
+    },
+    "1": {
+     "V0": {
+      "delta": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "out_of_range": false
+     },
+     "V1": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V10": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V11": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V2": {
+      "delta": 8.178170462766584,
+      "lo": 4.239703155211482,
+      "hi": 9.311170049972864,
+      "out_of_range": false
+     },
+     "V3": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V4": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V4c05": {
+      "delta": 0.08226862782947819,
+      "lo": -2.7306359639303173,
+      "hi": 1.935526370616249,
+      "out_of_range": false
+     },
+     "V4c2": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V5": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V6": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V7": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     },
+     "V8": {
+      "delta": NaN,
+      "lo": NaN,
+      "hi": NaN,
+      "out_of_range": true
+     }
+    }
+   }
+  },
+  "H3a": {
+   "rule": "CI of max_lambda CLIP(V2) - max_lambda CLIP(V3) > 0",
+   "status": "INCONCLUSIVE",
+   "detail": {
+    "point": 0.05601730523286008,
+    "lo": -0.11708938539027888,
+    "hi": 0.22403761956426926,
+    "n": 540
+   }
+  }
+ },
+ "other_t_status": {
+  "0.7": {
+   "H3b": "NOT_TESTABLE",
+   "H3c": "NOT_TESTABLE"
+  },
+  "0.5": {
+   "H3b": "NOT_TESTABLE",
+   "H3c": "NOT_TESTABLE"
+  }
+ }
+}

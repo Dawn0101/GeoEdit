@@ -1,20 +1,12 @@
-# ---- 可再生成的大件（不入库） ----
+# ---- 可再生成 / 体积大的产物（一律不入库） ----
+# 逐图 CSV、latent、图片、归档；汇总版在 deepseek_talk/<stage>/
+results/
+# PIE npz 缓存 + 本地 CLIP 软链
 cache/
 logs/
 *.pt
 *.npz
 *.tar.gz
-
-# 逐图/逐点的大 CSV：结论已固化在 deepseek_talk/<stage>/ 的汇总里
-results/p1/latents/
-results/p2/latents/
-results/p2/png_subset/
-results/**/shards/
-results/_archive/
-results/p1/per_image.csv
-results/p1/fig_examples.png
-results/p2/per_image.csv
-results/p2/diag.csv
 
 # ---- Python ----
 __pycache__/

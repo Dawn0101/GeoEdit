@@ -1,7 +1,7 @@
 """SD-Turbo wrapper: noise schedule, VAE, prompt embeddings, x0 prediction.
 
 Everything the experiments need from the diffusion model lives here, so that
-``edit_ops.py`` / ``halo.py`` never touch diffusers directly.
+``edit_ops.py`` / ``masks.py`` never touch diffusers directly.
 
 Conventions (shared by every script)
 ------------------------------------
@@ -39,7 +39,13 @@ class SDTurbo:
         text_precision: str = "fp32",
         image_size: int = 512,
         max_length: int = 77,
+        vae_only: bool = False,
     ) -> None:
+        """``vae_only=True`` skips the UNet and the text encoder (5 GB of weights).
+
+        Only ``encode`` / ``decode`` are usable then.  P3a needs nothing else: the
+        residuals come from ``results/p3/a/R`` and the edit is pure latent arithmetic.
+        """
         from diffusers import AutoencoderKL, DDPMScheduler, UNet2DConditionModel
         from transformers import AutoTokenizer, CLIPTextModel
 
@@ -59,16 +65,21 @@ class SDTurbo:
         self.vae_dtype = PRECISIONS[vae_precision]
         self.text_dtype = PRECISIONS[text_precision]
 
-        self.unet = UNet2DConditionModel.from_pretrained(
-            str(root / "unet"), torch_dtype=self.unet_dtype
-        ).to(self.device).eval()
         self.vae = AutoencoderKL.from_pretrained(
             str(root / "vae"), torch_dtype=self.vae_dtype
         ).to(self.device).eval()
-        self.tokenizer = AutoTokenizer.from_pretrained(str(root / "tokenizer"))
-        self.text_encoder = CLIPTextModel.from_pretrained(
-            str(root / "text_encoder"), torch_dtype=self.text_dtype
-        ).to(self.device).eval()
+        if vae_only:
+            self.unet = None
+            self.tokenizer = None
+            self.text_encoder = None
+        else:
+            self.unet = UNet2DConditionModel.from_pretrained(
+                str(root / "unet"), torch_dtype=self.unet_dtype
+            ).to(self.device).eval()
+            self.tokenizer = AutoTokenizer.from_pretrained(str(root / "tokenizer"))
+            self.text_encoder = CLIPTextModel.from_pretrained(
+                str(root / "text_encoder"), torch_dtype=self.text_dtype
+            ).to(self.device).eval()
         self.scheduler = DDPMScheduler.from_pretrained(str(scheduler_dir))
 
         self.prediction_type = self.scheduler.config.prediction_type
@@ -81,6 +92,8 @@ class SDTurbo:
         self.nfe = 0  # UNet forward counter (T-E3 / NFE reporting)
 
         for module in (self.unet, self.vae, self.text_encoder):
+            if module is None:
+                continue
             for param in module.parameters():
                 param.requires_grad_(False)
 
@@ -112,6 +125,8 @@ class SDTurbo:
     @torch.no_grad()
     def embed(self, prompts: Sequence[str]) -> torch.Tensor:
         """``[B, 77, 1024]`` truncated CLIP text embeddings in the UNet dtype."""
+        if self.text_encoder is None:
+            raise RuntimeError("embed() needs the text encoder; this SDTurbo was built with vae_only=True")
         missing = [p for p in prompts if p not in self._embed_cache]
         if missing:
             tokens = self.tokenizer(
@@ -163,6 +178,8 @@ class SDTurbo:
         emb: torch.Tensor,
     ) -> torch.Tensor:
         """``E[x0 | z, c]`` for a batch; ``t`` may be a scalar or one value per item."""
+        if self.unet is None:
+            raise RuntimeError("x0_pred() needs the UNet; this SDTurbo was built with vae_only=True")
         z = z.to(device=self.device, dtype=self.unet_dtype)
         emb = emb.to(device=self.device, dtype=self.unet_dtype)
         if isinstance(t, torch.Tensor):
@@ -187,6 +204,42 @@ class SDTurbo:
         else:
             raise ValueError(f"unsupported prediction_type {self.prediction_type!r}")
         return x0
+
+    @torch.no_grad()
+    def eps_pred(
+        self,
+        z: torch.Tensor,
+        t: Union[float, torch.Tensor],
+        emb: torch.Tensor,
+    ) -> torch.Tensor:
+        """``E[eps | z, c]`` (the noise prediction, not x0).  One UNet forward."""
+        if self.unet is None:
+            raise RuntimeError("eps_pred() needs the UNet; this SDTurbo was built with vae_only=True")
+        z = z.to(device=self.device, dtype=self.unet_dtype)
+        emb = emb.to(device=self.device, dtype=self.unet_dtype)
+        if isinstance(t, torch.Tensor):
+            timesteps = (t.to(self.device, torch.float32) * self.max_timestep).round().long()
+            timesteps = timesteps.clamp(0, self.max_timestep)
+        else:
+            timesteps = torch.full((z.shape[0],), self.timestep_index(t), dtype=torch.long,
+                                   device=self.device)
+
+        out = self.unet(z, timesteps, encoder_hidden_states=emb, return_dict=False)[0]
+        self.nfe += 1
+
+        a, b = self.ab_tensor(timesteps)
+        a = a.to(z.dtype)
+        b = b.to(z.dtype)
+        if self.prediction_type == "epsilon":
+            eps = out
+        elif self.prediction_type == "v_prediction":
+            # z = a x0 + b eps, v = a eps - b x0  =>  eps = a v + b z
+            eps = a * out + b * z
+        elif self.prediction_type == "sample":
+            eps = (z - a * out) / b.clamp_min(1e-8)
+        else:
+            raise ValueError(f"unsupported prediction_type {self.prediction_type!r}")
+        return eps
 
     # ------------------------------------------------------------------ #
     def reset_nfe(self) -> None:

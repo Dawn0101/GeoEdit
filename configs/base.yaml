@@ -1,14 +1,14 @@
-# 全局设置(§2)。所有脚本都读这一份,再由 p1_halo.yaml / p2_howfar.yaml 覆盖。
+# 全局设置(P3 §2)。所有脚本都读这一份，再由 p3.yaml 覆盖。
 model_root: /data/lx/Model/SD-Turbo
 pie_root: /data/lx/Dataset/PIE-Bench-Dataset
 output_root: results
 cache_root: cache
 image_size: 512
-cfg_scale: null            # 不用 CFG,只取条件预测
-unet_precision: fp32       # S3 未通过(fp16 vs fp32 中位差 1.25% > 1%),按 §6 全部改用 fp32
-vae_precision: fp32        # 与 unet 一致,避免同一 pipeline 混精度
+cfg_scale: null            # 不用 CFG，只取条件预测
+unet_precision: fp32       # v2 D1：fp16 未通过 S3（相对差中位 1.30% > 1%）
+vae_precision: fp32        # 与 unet 一致，避免同一 pipeline 混精度；解码 batch 要小（峰值 ~1.5 GB/张）
 text_precision: fp32
-batch_size: 8              # 跨图批处理的默认上限(显存 3-4GB/16 张)
-num_shards: 3
-gpus: [5, 6, 7]
+batch_size: 8              # 跨图批处理的默认上限
+num_shards: 12             # 3 卡 × 4 进程（P3a 只加载 VAE）
+gpus: [4, 5, 6]
 seed_base: 0

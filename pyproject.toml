@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "geoedit"
-version = "0.2.0"
-description = "One-step text-guided editing on SD-Turbo: halo (P1) and how-far/Picard (P2) tests"
+version = "0.3.0"
+description = "Push/pull/variance: noise-calibrated masks for one-step text-guided editing (P3)"
 requires-python = ">=3.10"
 
 # 扁平布局：包在仓库根目录（src/ 布局是 v1 的，已随分支切走）
@@ -14,4 +14,7 @@ packages = ["geoedit"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
+addopts = "-q -m 'not gpu'"
+markers = [
+    "gpu: needs the SD-Turbo weights and a free GPU (run with -m gpu)",
+]
