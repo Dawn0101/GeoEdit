@@ -1,0 +1,12 @@
+# P1 光晕检验(§3)
+t_list: [0.9, 0.7, 0.5]
+seeds: [0, 1, 2, 3]
+sigma_main: 3.0
+sigma_secondary: 1.5
+bands: [[0, 2], [2, 4], [4, 6], [6, 10], [10, .inf]]
+main_band: [2, 6]
+null_shifts: 20
+null_gap: 6.0
+min_band_pixels: 50
+max_interior_frac: 0.5
+exclude_categories: ["8", "9"]

@@ -1,0 +1,14 @@
+# P2 "推多远"检验(§4)
+t_list: [0.9, 0.7, 0.5]
+seeds_by_t: {0.9: [0, 1], 0.7: [0], 0.5: [0]}
+lam_list: [0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+picard_k: [1, 2, 3, 4, 5, 6]
+avg_k: [2, 4, 6]
+avg_lambda: [1.0, 2.0]
+t_c: 0.3
+prox_seed_offset: 10000     # eps_c = make_eps(image_id, seed + offset)
+bootstrap: 1000
+audit_psnr_range: [20, 27]
+audit_clip_min: 20.0
+png_subset_n: 50
+divergence_ratio: 5.0

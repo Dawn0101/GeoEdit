@@ -1,0 +1,52 @@
+[2026-11-24T19:21:58] ======================================================================
+[2026-11-24T19:21:59] sanity start  {'torch': '2.6.0+cu124', 'diffusers': '0.31.0', 'scipy': '1.15.3', 'numpy': '2.2.6', 'cuda': '12.4', 'gpu': 'NVIDIA A100-PCIE-40GB', 'geoedit': '0.2.0'}
+[2026-11-24T19:21:59] dataset: 700 samples, categories={'0': 140, '1': 80, '2': 80, '3': 80, '4': 40, '5': 40, '6': 40, '7': 40, '8': 80, '9': 80}
+[2026-11-24T19:22:03] model: {'prediction_type': 'epsilon', 'num_train_timesteps': 1000, 'scaling_factor': 0.18215, 'unet_dtype': 'torch.float16', 'vae_dtype': 'torch.float16', 'text_dtype': 'torch.float32', 'a_t0.9': 0.11957703847826413, 'b_t0.9': 0.9928249250843614}
+[2026-11-24T19:22:03]   t=0.3 step=300 a=0.76844 b=0.63992 nu=0.693
+[2026-11-24T19:22:03]   t=0.5 step=500 a=0.52567 b=0.85069 nu=2.619
+[2026-11-24T19:22:03]   t=0.7 step=699 a=0.28832 b=0.95753 nu=11.03
+[2026-11-24T19:22:03]   t=0.9 step=899 a=0.11958 b=0.99282 nu=68.937
+[2026-11-24T19:22:03] S1: R must vanish when prompts match ...
+[2026-11-24T19:22:17]   -> {'pass': True, 'max_abs_R': 0.0, 'worst_image': None, 'note': 'prompt identical -> R must vanish; fp16 tolerance 1e-3'}
+[2026-11-24T19:22:17] S2: determinism ...
+[2026-11-24T19:22:17]   -> {'pass': True, 'bitwise_equal': True, 'image': '000000000000'}
+[2026-11-24T19:22:17] S3: fp16 vs fp32 residual ...
+[2026-11-24T19:22:23]   -> {'pass': False, 'median_rel': 0.012470487247149427, 'max_rel': 0.023057426712122898, 'n': 10, 'note': '< 1% required; otherwise switch everything to fp32'}
+[2026-11-24T19:22:23] S4: audit gate on 10 images (lam=1 + prox, t=0.9) ...
+[2026-11-24T19:22:35]   -> pass=True mean PSNR=21.28 CLIP-E=24.25 recon=36.55
+[2026-11-24T19:22:35] all_pass = False   -> results/sanity.json
+[2026-11-24T19:22:35] S3 FAILED: switch unet/vae precision to fp32 in configs/base.yaml and record in report/DEVIATIONS.md
+[2026-11-24T19:22:47] ======================================================================
+[2026-11-24T19:22:48] sanity start  {'torch': '2.6.0+cu124', 'diffusers': '0.31.0', 'scipy': '1.15.3', 'numpy': '2.2.6', 'cuda': '12.4', 'gpu': 'NVIDIA A100-PCIE-40GB', 'geoedit': '0.2.0'}
+[2026-11-24T19:22:48] dataset: 700 samples, categories={'0': 140, '1': 80, '2': 80, '3': 80, '4': 40, '5': 40, '6': 40, '7': 40, '8': 80, '9': 80}
+[2026-11-24T19:22:53] model: {'prediction_type': 'epsilon', 'num_train_timesteps': 1000, 'scaling_factor': 0.18215, 'unet_dtype': 'torch.float32', 'vae_dtype': 'torch.float32', 'text_dtype': 'torch.float32', 'a_t0.9': 0.11957703847826413, 'b_t0.9': 0.9928249250843614}
+[2026-11-24T19:22:53]   t=0.3 step=300 a=0.76844 b=0.63992 nu=0.693
+[2026-11-24T19:22:53]   t=0.5 step=500 a=0.52567 b=0.85069 nu=2.619
+[2026-11-24T19:22:53]   t=0.7 step=699 a=0.28832 b=0.95753 nu=11.03
+[2026-11-24T19:22:53]   t=0.9 step=899 a=0.11958 b=0.99282 nu=68.937
+[2026-11-24T19:22:53] S1: R must vanish when prompts match ...
+[2026-11-24T19:22:55]   -> {'pass': True, 'max_abs_R': 0.0, 'worst_image': None, 'note': 'prompt identical -> R must vanish; fp16 tolerance 1e-3'}
+[2026-11-24T19:22:55] S2: determinism ...
+[2026-11-24T19:22:55]   -> {'pass': True, 'bitwise_equal': True, 'image': '000000000000'}
+[2026-11-24T19:22:55] S3: fp16 vs fp32 residual ...
+[2026-11-24T19:23:03]   -> {'pass': True, 'median_rel': 0.012971181019438834, 'max_rel': 0.023057426712122898, 'n': 20, 'using_fp32': True, 'note': 'median_rel < 1% required to keep fp16; otherwise run everything in fp32'}
+[2026-11-24T19:23:03] S4: audit gate on 50 images (lam=1 + prox, t=0.9) ...
+[2026-11-24T19:23:53]   -> pass=False mean PSNR=inf CLIP-E=22.61 recon=inf
+[2026-11-24T19:23:53] all_pass = False   -> results/sanity.json
+[2026-11-24T19:24:04] ======================================================================
+[2026-11-24T19:24:04] sanity start  {'torch': '2.6.0+cu124', 'diffusers': '0.31.0', 'scipy': '1.15.3', 'numpy': '2.2.6', 'cuda': '12.4', 'gpu': 'NVIDIA A100-PCIE-40GB', 'geoedit': '0.2.0'}
+[2026-11-24T19:24:04] dataset: 700 samples, categories={'0': 140, '1': 80, '2': 80, '3': 80, '4': 40, '5': 40, '6': 40, '7': 40, '8': 80, '9': 80}
+[2026-11-24T19:24:09] model: {'prediction_type': 'epsilon', 'num_train_timesteps': 1000, 'scaling_factor': 0.18215, 'unet_dtype': 'torch.float32', 'vae_dtype': 'torch.float32', 'text_dtype': 'torch.float32', 'a_t0.9': 0.11957703847826413, 'b_t0.9': 0.9928249250843614}
+[2026-11-24T19:24:09]   t=0.3 step=300 a=0.76844 b=0.63992 nu=0.693
+[2026-11-24T19:24:09]   t=0.5 step=500 a=0.52567 b=0.85069 nu=2.619
+[2026-11-24T19:24:09]   t=0.7 step=699 a=0.28832 b=0.95753 nu=11.03
+[2026-11-24T19:24:09]   t=0.9 step=899 a=0.11958 b=0.99282 nu=68.937
+[2026-11-24T19:24:09] S1: R must vanish when prompts match ...
+[2026-11-24T19:24:11]   -> {'pass': True, 'max_abs_R': 0.0, 'worst_image': None, 'note': 'prompt identical -> R must vanish; fp16 tolerance 1e-3'}
+[2026-11-24T19:24:11] S2: determinism ...
+[2026-11-24T19:24:11]   -> {'pass': True, 'bitwise_equal': True, 'image': '000000000000'}
+[2026-11-24T19:24:11] S3: fp16 vs fp32 residual ...
+[2026-11-24T19:24:20]   -> {'pass': True, 'median_rel': 0.012971181019438834, 'max_rel': 0.023057426712122898, 'n': 20, 'using_fp32': True, 'note': 'median_rel < 1% required to keep fp16; otherwise run everything in fp32'}
+[2026-11-24T19:24:20] S4: audit gate on 50 images (lam=1 + prox, t=0.9) ...
+[2026-11-24T19:25:09]   -> pass=True mean PSNR=21.23 CLIP-E=23.36 recon=34.05
+[2026-11-24T19:25:09] all_pass = True   -> results/sanity.json

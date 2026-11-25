@@ -1,0 +1,40 @@
+{
+  "project": "geoedit v2 (P1 halo + P2 how-far)",
+  "date": "2026-11-24",
+  "n_p1_latents": 8400,
+  "n_p2_bundles": 2800,
+  "p2_rows": 106400,
+  "p2_png_subset": 950,
+  "p1_files": [
+    "fig_examples.png",
+    "fig_per_category.png",
+    "fig_rho_hist_t0.9.png",
+    "fig_rho_vs_band.png",
+    "h1c.json",
+    "latents",
+    "manifest.json",
+    "per_image.csv",
+    "picard_halo.csv",
+    "shards",
+    "summary.json"
+  ],
+  "p2_files": [
+    "diag.csv",
+    "fig_convergence.png",
+    "hypotheses.json",
+    "latents",
+    "manifest.json",
+    "matched_clip.csv",
+    "pareto_t0.9_prox.png",
+    "pareto_t0.9_raw.png",
+    "per_image.csv",
+    "png_subset",
+    "shards",
+    "summary.csv"
+  ],
+  "report_files": [
+    "DEVIATIONS.md",
+    "REPORT_interim_p1.md",
+    "REPORT_p1_p2.md"
+  ]
+}

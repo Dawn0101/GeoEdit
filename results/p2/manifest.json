@@ -1,0 +1,126 @@
+{
+  "created": "2026-11-24T19:46:43",
+  "host": "xingyu",
+  "git": "unknown",
+  "stage": "p2_generate",
+  "configs": {
+    "base": {
+      "model_root": "/data/lx/Model/SD-Turbo",
+      "pie_root": "/data/lx/Dataset/PIE-Bench-Dataset",
+      "output_root": "results",
+      "cache_root": "cache",
+      "image_size": 512,
+      "cfg_scale": null,
+      "unet_precision": "fp32",
+      "vae_precision": "fp32",
+      "text_precision": "fp32",
+      "batch_size": 8,
+      "num_shards": 3,
+      "gpus": [
+        5,
+        6,
+        7
+      ],
+      "seed_base": 0
+    },
+    "p2": {
+      "t_list": [
+        0.9,
+        0.7,
+        0.5
+      ],
+      "seeds_by_t": {
+        "0.9": [
+          0,
+          1
+        ],
+        "0.7": [
+          0
+        ],
+        "0.5": [
+          0
+        ]
+      },
+      "lam_list": [
+        0.5,
+        1.0,
+        1.5,
+        2.0,
+        2.5,
+        3.0
+      ],
+      "picard_k": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "avg_k": [
+        2,
+        4,
+        6
+      ],
+      "avg_lambda": [
+        1.0,
+        2.0
+      ],
+      "t_c": 0.3,
+      "prox_seed_offset": 10000,
+      "bootstrap": 1000,
+      "audit_psnr_range": [
+        20,
+        27
+      ],
+      "audit_clip_min": 20.0,
+      "png_subset_n": 50,
+      "divergence_ratio": 5.0
+    }
+  },
+  "num_shards": 3,
+  "grid": {
+    "t_list": [
+      0.9,
+      0.7,
+      0.5
+    ],
+    "seeds_by_t": {
+      "0.9": [
+        0,
+        1
+      ],
+      "0.7": [
+        0
+      ],
+      "0.5": [
+        0
+      ]
+    },
+    "lam": [
+      0.5,
+      1.0,
+      1.5,
+      2.0,
+      2.5,
+      3.0
+    ],
+    "picard_k": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "avg_k": [
+      2,
+      4,
+      6
+    ],
+    "avg_lambda": [
+      1.0,
+      2.0
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+# 由 geomedit 环境导出(results/env.txt 是完整 pip freeze)
+torch==2.6.0+cu124
+torchvision==0.21.0+cu124
+diffusers==0.31.0
+transformers==4.57.6
+accelerate==1.13.0
+safetensors==0.8.0
+huggingface_hub==0.36.2
+torchmetrics==1.8.2
+numpy==2.2.6
+scipy==1.15.3
+scikit-image==0.25.2
+pandas==2.3.3
+matplotlib==3.10.9
+Pillow==12.3.0
+timm==0.9.16
+pyyaml==6.0.2
+pytest==9.2.0
