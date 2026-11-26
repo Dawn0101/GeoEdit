@@ -65,7 +65,14 @@ def dilated_mask(sample, mask512_grid) -> torch.Tensor:
 def energy_weight(Rs: torch.Tensor, mode: str) -> torch.Tensor:
     """Support of the mean energy: threshold at ``0.5 * max`` or at the median."""
     energy = Rs.norm(dim=1).mean(dim=0)
-    thr = 0.5 * energy.max() if mode == "half_max" else energy.median()
+    if mode == "half_max":
+        thr = 0.5 * energy.max()
+    elif mode == "median":
+        thr = energy.median()
+    elif mode == "top35":
+        thr = torch.quantile(energy.flatten(), 0.65)
+    else:
+        raise ValueError(mode)
     return (energy >= thr).float()
 
 
@@ -149,6 +156,58 @@ def run_grid(args, base, p3, dataset, indices) -> int:
                   f"eta {(len(indices) - position - 1) * el / processed / 60:.1f} min", flush=True)
     print(f"[grid shard {args.shard}] done={processed} in {(time.perf_counter() - start) / 60:.1f} min",
           flush=True)
+    return 0
+
+
+def run_v12c(args, base, p3, dataset, indices) -> int:
+    """V12c: the t=0.5 energy mask thresholded at the 65th percentile (~35% of the frame)."""
+    model = SDTurbo(model_root=base["model_root"], device=args.device,
+                    unet_precision=base["unet_precision"], vae_precision=base["vae_precision"],
+                    text_precision=base["text_precision"], vae_only=True)
+    metrics = PieMetrics(device=args.device)
+    lam_list = [float(v) for v in p3["lam_list"]]
+    a_root = ROOT / base["output_root"] / "p3" / "a"
+    csv_path = ROOT / base["output_root"] / "p3" / "posthoc" / "shards" / f"v12c_shard{args.shard}.csv"
+    done = {row["image_id"] for row in _read(csv_path)}
+    print(f"[v12c shard {args.shard}] {len(indices)} images on {args.device}", flush=True)
+    start = time.perf_counter()
+    for position, index in enumerate(indices):
+        sample = dataset[index]
+        if sample.image_id in done:
+            continue
+        x_s = torch.load(a_root / "xs" / f"{sample.image_id}.pt", weights_only=True).float().to(model.device)
+        b = torch.load(a_root / "R" / f"{sample.image_id}.pt", weights_only=True)
+        R9 = torch.stack([b[f"t0.9_s{s}"] for s in range(4)], 0).float().to(model.device)
+        R5 = torch.stack([b[f"t0.5_s{s}"] for s in range(4)], 0).float().to(model.device)
+        w5 = energy_weight(R5, "top35").to(model.device)
+        source = np.asarray(sample.image())
+        src_feat = metrics._image_features([source])
+        tar_text = metrics._text_features(sample.tar_prompt)
+        src_text = metrics._text_features(sample.src_prompt)
+        latents = []
+        for lam in lam_list:
+            latents.append({"variant": "V12c", "lam": lam, "latent": x_s + float(lam) * apply(w5, R9[0])})
+        decoded: List[np.ndarray] = []
+        for k in range(0, len(latents), args.batch):
+            stack = torch.cat([c["latent"] for c in latents[k:k + args.batch]], dim=0).to(model.device)
+            decoded.extend(model.decode(stack))
+        scored = metrics.evaluate_many(source, decoded, sample.mask512,
+                                      sample.src_prompt, sample.tar_prompt, chunk=args.eval_batch)
+        feats = metrics._image_features(decoded)
+        cd = clip_d(feats, src_feat, tar_text, src_text).float().cpu()
+        rows = [{"image_id": sample.image_id, "category": sample.category, "t": 0.9,
+                 "variant": "V12c", "lam": meta["lam"], "psnr": row["psnr_unedit"],
+                 "lpips": row["lpips_unedit"], "mse": row["mse_unedit"], "ssim": row["ssim_unedit"],
+                 "struct_dist": row["struct_dist"],
+                 "clip_target_whole": row["clip_target_whole"],
+                 "clip_target_edit": row["clip_target_edit"],
+                 "clip_source_whole": row["clip_source_whole"], "clip_d": float(value)}
+                for meta, row, value in zip(latents, scored, cd)]
+        append_rows(csv_path, rows, GRID_FIELDS)
+        if (position + 1) % 20 == 0:
+            el = time.perf_counter() - start
+            print(f"  {position + 1}/{len(indices)} {el / (position + 1):.1f}s/img", flush=True)
+    print(f"[v12c shard {args.shard}] done in {(time.perf_counter() - start) / 60:.1f} min", flush=True)
     return 0
 
 
@@ -245,7 +304,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="configs/base.yaml")
     parser.add_argument("--p3-config", default="configs/p3.yaml")
-    parser.add_argument("--part", choices=["grid", "bestof"], required=True)
+    parser.add_argument("--part", choices=["grid", "bestof", "v12c"], required=True)
     parser.add_argument("--shard", type=int, default=0)
     parser.add_argument("--num-shards", type=int, default=None)
     parser.add_argument("--device", default=None)
@@ -273,6 +332,8 @@ def main() -> int:
     indices = [i for i in range(len(dataset)) if i % num_shards == args.shard]
     if args.limit:
         indices = indices[: args.limit]
+    if args.part == "v12c":
+        return run_v12c(args, base, p3, dataset, indices)
     return run_grid(args, base, p3, dataset, indices)
 
 

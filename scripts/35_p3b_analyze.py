@@ -141,7 +141,8 @@ def main() -> int:
 
     # descriptive: antithetic noise vs seed-0/1 noise
     if (main_df["kind"] == "antithetic").any():
-        anti = curves_for(main_df, T_MAIN, "antithetic")
+        anti_raw = curves_for(main_df, T_MAIN, "antithetic")
+        anti = {"antithetic": next(iter(anti_raw.values()))} if anti_raw else {}
         res = stats.boot_psnr_at_clip({**curves, **anti}, ["J0", "antithetic"],
                                      anchors[0], n_boot=n_boot, rng=np.random.default_rng(1))
         report["antithetic"] = {"anchor_clip": anchors[0],

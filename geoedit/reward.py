@@ -49,6 +49,10 @@ def refine(w: torch.Tensor, delta_l: torch.Tensor, pool: int = 3) -> torch.Tenso
     """``w_1 = w_0 * 1[ smoothed(delta_l) > 0 ]``: drop pixels that did not get more target-like."""
     import torch.nn.functional as F
 
+    if delta_l.dim() == 4 and delta_l.shape[0] == 1:
+        delta_l = delta_l[0]
+    if delta_l.dim() == 3 and delta_l.shape[0] == 1:
+        delta_l = delta_l[0]
     if pool > 1:
         smoothed = F.avg_pool2d(delta_l[None, None], kernel_size=pool, stride=1,
                                 padding=pool // 2, count_include_pad=False)[0, 0]
