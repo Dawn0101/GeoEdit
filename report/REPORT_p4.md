@@ -79,6 +79,17 @@
 
 ## 2.5 E1d：用 EditReward 在做**匹配幅度**的语义评判（200 图，已跑）
 
+> **⛔ 2026-11-26 作废（P5-§1.1 发现真 bug，见 `REPORT_p5.md` §1.1 与 `DEVIATIONS.md` P5-D1）。**
+> 本节全部数字来自一个**词嵌入被随机初始化**的 EditReward：P4 的加载器把 151666 写在外层
+> `config.vocab_size` 上，而文本塔读 `config.text_config.vocab_size`（仍为 152064），
+> `ignore_mismatched_sizes=True` 把形状不匹配静默吞掉，`embed_tokens` 与 `lm_head` 被随机重新
+> 初始化（视觉塔正常加载）。因此本节的"src 得分最高"、以及由它推出的
+> "同幅度下平均不损失语义（V1−V0 = −0.000）"、"只有 GT mask 被偏好（V2−V0 = +0.103）"
+> **一律不得引用**。修好加载器后同样的检查（`REPORT_p5.md` §1.3）显示 EditReward 仍然认为
+> "不编辑"最好，但那是它作为 Bradley-Terry 奖励模型的先验，而不是随机权重。
+> 另：本节把 `tar_prompt`（目标 caption）当指令传入，正确字段是 PIE-Bench 的
+> `editing_instruction`（`DEVIATIONS.md` P5-D2）。
+
 CLIP-D 既然只是幅度计，语义比较就必须换评委、并且把幅度对齐。本轮用本地
 **EditReward（Qwen2.5-VL-7B + 两个 reward head，`/data/lx/Model/Qwen2.5-VL-7B-SFT`）**，
 按官方 prompt（`INSTRUCTION_EDIT_FOLLOWING` / `INSTRUCTION_EDIT_QUALITY` + `<|Reward|>`）打分。
@@ -153,7 +164,7 @@ P3d 的 D1b（匹配前沿后混合不占优）不受影响——它本来就说
 | `scripts/41–43_p4_main/analyze/…`（第 1 步）| 同上 |
 | 测试 T-L1–T-L8 | 它们是闭环实现的单元测试，闭环代码未写 |
 | 第二阶段 SDS、C1/C2/C3/C6/C8 消融 | 只在第 1 步跑起来后才有意义 |
-| ~~E1d~~ | 已做（§2.5）：用 EditReward 在匹配幅度下评判，结论见 §2.5 |
+| ~~E1d~~ | **已作废**（§2.5 顶部）：评委权重被随机初始化，重做见 `REPORT_p5.md` §1.3 |
 
 ## 5. 建议的下一步（给 PI 决定）
 

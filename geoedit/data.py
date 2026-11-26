@@ -33,6 +33,10 @@ class PIESample:
     mask512: np.ndarray  # bool [512, 512]
     mask64: np.ndarray  # float32 [64, 64] in {0, 1}
     dist64: np.ndarray  # float32 [64, 64], distance to nearest interior latent cell
+    # P5: the VLM judges must be fed PIE-Bench's own ``editing_instruction`` (a sentence such as
+    # "Make the frame of the bike rusty"), not the target caption in ``tar_prompt``.
+    instruction: str = ""
+    blended_word: str = ""  # "bicycle bicycle": the edited word in src / in tar
 
     @property
     def interior_fraction(self) -> float:
@@ -127,6 +131,8 @@ class PIEDataset:
                     mask64=mask64,
                     dist64=dist64,
                 )
+        entry.instruction = base.editing_instruction
+        entry.blended_word = base.blended_word
         self._cache[image_id] = entry
         return entry
 

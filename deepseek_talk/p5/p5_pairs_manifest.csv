@@ -1,0 +1,51 @@
+image_id,category,instruction,src_prompt,tar_prompt,blended_word,path
+000000000005,0,Change the color of the cat from orange to black,an orange cat sitting on top of a fence,an black cat sitting on top of a fence,cat cat,results/p5/pairs/000000000005.png
+000000000008,0,Delete the flower in the puppy's mouth,a golden retriever holding a flower sitting on the ground in front of fence,a golden retriever sitting on the ground in front of fence,puppy puppy,results/p5/pairs/000000000008.png
+000000000027,0,Change the cat's eyes from open to close,a opened eyes cat sitting on wooden floor,a closed eyes cat sitting on wooden floor,eyes eyes,results/p5/pairs/000000000027.png
+000000000054,0,Change the bed to a table,a camera and a notebook on a bed,a camera and a notebook on a table,bed table,results/p5/pairs/000000000054.png
+000000000073,0,Change the weather from spring to autumn,a spring field with trees and a blue sky,a autumn field with trees and a blue sky,field field,results/p5/pairs/000000000073.png
+000000000087,0,Replace the horse with a dragon,a jockey rides a horse on a grassy field,a jockey rides a dragon on a grassy field,horse dragon,results/p5/pairs/000000000087.png
+000000000095,0,Make the fairy hold a crystal ball,a painting of a fairy with green wings holding a glowing jar,a painting of a fairy with green wings holding a crystal ball,jar ball,results/p5/pairs/000000000095.png
+000000000098,0,Change the background from sky to green grass,a light bulb hanging from a wire with sky in the background,a light bulb hanging from a wire with grass in the background,sky grass,results/p5/pairs/000000000098.png
+000000000100,0,Change the environment from a field to a forest,a woman in black holding an umbrella walks through a field,a woman in black holding an umbrella walks through a forest,field forest,results/p5/pairs/000000000100.png
+000000000122,0,Replace snow with leaves,a view of the mountains covered in snow,a view of the mountains covered in leaves,snow leaves,results/p5/pairs/000000000122.png
+000000000135,0,Change the rocks to a boat,the two people are standing on rocks with a fish,the two people are standing on boat with a fish,rocks boat,results/p5/pairs/000000000135.png
+112000000002,1,Replace the boy with a girl,cartoon boy driving a car,cartoon girl driving a car,boy girl,results/p5/pairs/112000000002.png
+113000000003,1,Change the cake to an icecream,a cake with a pink and blue icing,a icecream with a pink and blue icing,cake icecream,results/p5/pairs/113000000003.png
+113000000008,1,Replace teacup with cake,a teacup and saucer with a spoon and a fork,a cake and saucer with a spoon and a fork,teacup cake,results/p5/pairs/113000000008.png
+114000000006,1,Replace the lake with magma,a small cabin on an island in the middle of lake,a small cabin on an island in the middle of magma,lake magma,results/p5/pairs/114000000006.png
+121000000004,1,Change the bird to a butterfly,a blue and white bird sits on a branch,a blue and white butterfly sits on a branch,bird butterfly,results/p5/pairs/121000000004.png
+122000000000,1,change the couples to robots,a photo of couples dancing,a photo of robots dancing,couples robots,results/p5/pairs/122000000000.png
+122000000005,1,Change the bench to a sofa,a woman sitting on a bench using her cell phone,a woman sitting on a sofa using her cell phone,bench sofa,results/p5/pairs/122000000005.png
+122000000008,1,Change the woman to a man,a woman and a horse,a man and a horse,woman man,results/p5/pairs/122000000008.png
+123000000006,1,Replace the notebook with a calendar,bamboo bonsai plant and notebook on white table,bamboo bonsai plant and calendar on white table,notebook calendar,results/p5/pairs/123000000006.png
+124000000001,1,Replace the boat with a blanket,a man in a boat is silhouetted against the sunset,a man in a blanket is silhouetted against the sunset,boat blanket,results/p5/pairs/124000000001.png
+124000000004,1,Change the potted plant to a sitted man,a white brick wall and a potted plant,a white brick wall and a sitted man,plant man,results/p5/pairs/124000000004.png
+211000000002,2,Add leaves to the bee illustration,a bee illustration on a paper,a bee illustration on a paper with leaves,paper paper,results/p5/pairs/211000000002.png
+212000000006,2,Add a flying butterfly,a digital art of a brown hair woman,a digital art of a brown hair woman with flying butterfly,,results/p5/pairs/212000000006.png
+214000000002,2,Add clouds in the sky to the sunset scene,a family playing with their dog at sunset,a family playing with their dog at sunset with clouds in the sky,sunset sunset,results/p5/pairs/214000000002.png
+214000000005,2,Add a wizard to the witcher,"the witcher 3, fantasy art","the witcher 3 with a small wizard, fantasy art",,results/p5/pairs/214000000005.png
+221000000000,2,put a red dog collar on the dog's neck,a dog looking at the camera,a dog with a red dog collar looking at the camera,dog dog,results/p5/pairs/221000000000.png
+221000000003,2,Add another small brown bird,a small brown bird sitting on top of a pine tree,two small brown bird sitting on top of a pine tree,bird bird,results/p5/pairs/221000000003.png
+222000000001,2,Add a dress to the woman in the coat,a woman in a coat is dancing,a woman in a coat and dress is dancing,woman woman,results/p5/pairs/222000000001.png
+223000000004,2,Add a chessboard to the background,two wooden chess pieces on a white background,two wooden chess pieces on a white background with chessboard,background background,results/p5/pairs/223000000004.png
+224000000005,2,add a cockroach,Two tents in the desert,Two tents and a cockroach in the desert,grass grass,results/p5/pairs/224000000005.png
+312000000007,3,Remove sun from the background,a cartoon boy standing on the edge of a cliff with his arms outstretched with sun in the background,a cartoon boy standing on the edge of a cliff with his arms outstretched,,results/p5/pairs/312000000007.png
+313000000000,3,Remove the faces from the plants,a cartoon illustration of two plants with faces,a cartoon illustration of two plants,,results/p5/pairs/313000000000.png
+314000000000,3,Remove the lightning,a house with lightning and rain on it,a house with rain on it,rain rain,results/p5/pairs/314000000000.png
+314000000006,3,Remove the moon,a lone wolf howling at the moon in the night sky,a lone wolf howling in the night sky,sky sky,results/p5/pairs/314000000006.png
+322000000005,3,Remove the bottles of water,a woman in sunglasses sitting at a table with a bottles of water,a woman in sunglasses sitting at a table,table table,results/p5/pairs/322000000005.png
+323000000008,3,Remove the leaf design from the top of the coffee cups,"two cups of coffee with a leaf design on the top, coffee beans","two cups of coffee, coffee beans",coffee coffee,results/p5/pairs/323000000008.png
+324000000004,3,Remove the rainbow over the ocean,rainbow over the ocean,the ocean,ocean ocean,results/p5/pairs/324000000004.png
+412000000000,4,change the woman's hair from long to short,a woman with long hair sitting in the sand at sunset,a woman with short hair sitting in the sand at sunset,hair hair,results/p5/pairs/412000000000.png
+412000000002,4,Change the woman's hair to straight instead of curly,a digital art woman with curly hair standing in front of buildings,a digital art woman with straight hair standing in front of buildings,woman woman,results/p5/pairs/412000000002.png
+414000000000,4,change the river from sparkling to blood,a cave with trees and sparkling river in the background,a cave with trees and blood river in the background,river river,results/p5/pairs/414000000000.png
+514000000004,5,Change to an overhead shot to the illustration of the lake with trees and mountains,vector illustration of a lake with trees and mountains,vector illustration of a lake with trees and mountains overhead shot,lake lake,results/p5/pairs/514000000004.png
+522000000002,5,make the boy's hands up,a young boy standing in the dirt with a jacket on,a young boy standing in the dirt with a jacket on and hands up,boy boy,results/p5/pairs/522000000002.png
+523000000002,5,Move lime slices to the left of the margarita glass,a margarita in a glass with lime slices putted in the right,a margarita in a glass with lime slices putted in the left,slices slices,results/p5/pairs/523000000002.png
+614000000002,6,Change the color of the rocks to white,a stack of black rocks and a ball in the water,a stack of white rocks and a ball in the water,rocks rocks,results/p5/pairs/614000000002.png
+623000000003,6,Change the marble background color from white to silver,mockup of a wooden frame with a red rose on a white marble background,mockup of a wooden frame with a red rose on a silver marble background,marble marble,results/p5/pairs/623000000003.png
+714000000000,7,Make the red leaf made of jewels,a close up of a red leaf on a plant,a close up of a red leaf made of jewels on a plant,leaf leaf,results/p5/pairs/714000000000.png
+722000000003,7,Change the woman to a wax statue,a woman in a black bikini top and yoga pants is meditating,a wax statue of woman in a black bikini top and yoga pants is meditating,woman statue,results/p5/pairs/722000000003.png
+723000000001,7,Add a plastic bowl to the table,tomatoes in a bowl on a table,tomatoes in a plastic bowl on a table,bowl bowl,results/p5/pairs/723000000001.png
+723000000004,7,make the camera a wooden toy,"vintage camera, polaroid, travel, travel photography","vintage wooden toy camera, polaroid, travel, travel photography",camera camera,results/p5/pairs/723000000004.png

@@ -1,0 +1,106 @@
+{
+ "created": "2026-11-26T20:59:42",
+ "n_images": 540,
+ "summary": {
+  "L0": {
+   "mean": 0.7356,
+   "median": 0.7898,
+   "std": 0.2096,
+   "count": 484
+  },
+  "L1": {
+   "mean": 0.7563,
+   "median": 0.8308,
+   "std": 0.2273,
+   "count": 484
+  },
+  "L2": {
+   "mean": 0.7619,
+   "median": 0.8487,
+   "std": 0.2326,
+   "count": 484
+  },
+  "L3": {
+   "mean": 0.7589,
+   "median": 0.8398,
+   "std": 0.2292,
+   "count": 484
+  },
+  "L4": {
+   "mean": 0.7633,
+   "median": 0.8506,
+   "std": 0.2332,
+   "count": 484
+  },
+  "L5": {
+   "mean": 0.766,
+   "median": 0.8565,
+   "std": 0.2362,
+   "count": 484
+  },
+  "L6": {
+   "mean": 0.7664,
+   "median": 0.8485,
+   "std": 0.2175,
+   "count": 484
+  },
+  "L7": {
+   "mean": 0.773,
+   "median": 0.8581,
+   "std": 0.2275,
+   "count": 484
+  }
+ },
+ "autocorrelation": {
+  "ac1": {
+   "region": "inside",
+   "mean": 0.5546014613176468,
+   "median": 0.5721338307507119
+  },
+  "ac1_out": {
+   "region": "outside",
+   "mean": 0.6624710945911794,
+   "median": 0.6750334945272292
+  },
+  "ac2": {
+   "region": "inside",
+   "mean": 0.37647403274622776,
+   "median": 0.3852612372535862
+  },
+  "ac2_out": {
+   "region": "outside",
+   "mean": 0.493121977818335,
+   "median": 0.5014467821210129
+  },
+  "ac3": {
+   "region": "inside",
+   "mean": 0.27198189241454795,
+   "median": 0.2762067823514075
+  },
+  "ac3_out": {
+   "region": "outside",
+   "mean": 0.38672974917471076,
+   "median": 0.3929563499791575
+  },
+  "ac5": {
+   "region": "inside",
+   "mean": 0.16451163906069607,
+   "median": 0.15375245261921738
+  },
+  "ac5_out": {
+   "region": "outside",
+   "mean": 0.27241248909768306,
+   "median": 0.2697664823227698
+  }
+ },
+ "gate_statistic": "median over images (the handoff's L0~0.79 and L7=0.858 are medians; the corresponding means are 0.736 and 0.773)",
+ "best_within_L1_L5_mean_stat": "L5",
+ "best_within_L1_L5_mean_auroc": 0.766,
+ "best_within_L1_L5_median_stat": "L5",
+ "best_within_L1_L5_median_auroc": 0.8565,
+ "L6_median": 0.8485,
+ "L7_median": 0.8581,
+ "gate_085_passed_on_median": true,
+ "gate_085_passed_on_mean": false,
+ "rule": "§2: if any of L1-L6 reaches AUROC >= 0.85 use it as the 4-NFE mask; otherwise run both 4-NFE (best of L1-L6) and 10-NFE (L7). The two statistics disagree, so §3 runs BOTH arms regardless (costs nothing: every arm reuses the P1 residuals)."
+}

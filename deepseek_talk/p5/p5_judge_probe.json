@@ -1,0 +1,53 @@
+{
+ "created": "2026-11-26T20:51:09",
+ "instruction": "Add a green bowl on the branch",
+ "device": "cuda:4",
+ "reward_token": "<|Reward|>",
+ "reward_token_id": 151665,
+ "tokenizer_len": 151666,
+ "embed_rows": 151666,
+ "rows": [
+  {
+   "pair": "src_src",
+   "dim1": 1.1371334791183472,
+   "dim2": -1.5638736486434937
+  },
+  {
+   "pair": "target_1",
+   "dim1": 1.439488410949707,
+   "dim2": -1.0983296632766724
+  },
+  {
+   "pair": "target_2",
+   "dim1": 1.8545987606048584,
+   "dim2": 0.03363145887851715
+  },
+  {
+   "pair": "target_3",
+   "dim1": 1.4626966714859009,
+   "dim2": -0.7910334467887878
+  },
+  {
+   "pair": "target_1_swapped",
+   "dim1": 1.5929899215698242,
+   "dim2": -0.562261164188385
+  },
+  {
+   "pair": "target_2_swapped",
+   "dim1": 2.0733776092529297,
+   "dim2": 0.580948531627655
+  },
+  {
+   "pair": "target_3_swapped",
+   "dim1": 1.7654649019241333,
+   "dim2": 0.017965951934456825
+  }
+ ],
+ "gains_over_src_src": {
+  "target_1": 0.30235493183135986,
+  "target_2": 0.7174652814865112,
+  "target_3": 0.3255631923675537
+ },
+ "verdict": "USAGE_OK",
+ "official_reference": "TIGER-AI-Lab/EditReward @ /tmp/EditReward_off (cloned 2026-11-26)"
+}

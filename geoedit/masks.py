@@ -70,6 +70,26 @@ def energy_mask(R: torch.Tensor, threshold: float = 0.5) -> torch.Tensor:
     return (energy / energy.max().clamp_min(1e-12) > threshold).float()
 
 
+def gaussian_blur(x: torch.Tensor, sigma: float) -> torch.Tensor:
+    """Separable Gaussian blur of a ``[64,64]`` map, exact at the border.
+
+    Zero padding removes kernel mass near the edges, so the result is divided by the blurred
+    all-ones map -- otherwise the outer cells would be systematically *damped* and the map would
+    lose its meaning as an energy (which matters for AUROC when the mask touches the border).
+    """
+    radius = max(1, int(round(3 * sigma)))
+    coords = torch.arange(-radius, radius + 1, dtype=x.dtype, device=x.device)
+    kernel = torch.exp(-0.5 * (coords / sigma) ** 2)
+    kernel = kernel / kernel.sum()
+
+    def _sep(z: torch.Tensor) -> torch.Tensor:
+        y = F.conv2d(z[None, None], kernel.view(1, 1, -1, 1), padding=(radius, 0))[0, 0]
+        return F.conv2d(y[None, None], kernel.view(1, 1, 1, -1), padding=(0, radius))[0, 0]
+
+    mass = _sep(torch.ones_like(x))
+    return _sep(x) / mass.clamp_min(1e-8)
+
+
 def variance_decomp(Rs: torch.Tensor, region: torch.Tensor) -> Dict[str, float]:
     """Random vs systematic energy inside a region (§3.2 item 1), in latent units.
 

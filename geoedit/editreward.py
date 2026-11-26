@@ -9,7 +9,18 @@ Reimplements only what inference needs, following the official code
 * the prompt is ``INSTRUCTION_EDIT_*`` + ``"Please provide the overall ratings of this image: <|Reward|>"``;
 * the head is applied to **every** token's hidden state and pooled at the ``<|Reward|>`` position;
 * ``min_pixels = max_pixels = 256*28*28``;
-* each head outputs ``(mean, uncertainty)``; the score is ``mean``.
+* each head outputs ``(mean, log_sigma)``; the released score is ``mean`` (it is a
+  Bradley-Terry reward, so only **differences** are calibrated).
+
+**P5-§1.1 bug fix.**  The P4 version set ``config.vocab_size = 151666`` on the *outer*
+multimodal config only.  ``Qwen2_5_VLConfig.vocab_size`` is a convenience field; the text model
+reads ``config.text_config.vocab_size``, which stayed at 152064.  The checkpoint's
+``embed_tokens``/``lm_head`` are ``[151666, 3584]``, so ``from_pretrained`` reported a size
+mismatch and -- because ``ignore_mismatched_sizes=True`` -- **reinitialised both at random**.
+The vision tower (shape-identical) still loaded, so the model saw images but read every text
+token through random embeddings; the scores in ``results/p4/e1d`` came from such a model and are
+therefore void.  The override now goes into ``text_config`` as well, loading is strict, and the
+embedding size is asserted against the tokenizer length.
 
 The paper: EditReward, arXiv 2509.26346 (ICLR 2026).
 """
@@ -25,6 +36,8 @@ import torch.nn as nn
 DEFAULT_PATH = Path("/data/lx/Model/Qwen2.5-VL-7B-SFT")
 REWARD_TOKEN = "<|Reward|>"
 MIN_PIXELS = MAX_PIXELS = 256 * 28 * 28
+# 151665 base tokenizer rows + ``<|Reward|>``; the checkpoint's embed_tokens/lm_head are this wide
+CHECKPOINT_VOCAB = 151666
 
 INSTRUCTION_EDIT_FOLLOWING = """
 You are tasked with evaluating an edited image **in comparison with the original source image** based on **Instruction Following & Semantic Fidelity**, and assigning a score from 1 to 4, with 1 being the worst and 4 being the best.
@@ -103,17 +116,25 @@ class EditRewardJudge:
 
         self.device = device
         self.dtype = dtype
-        # the checkpoint was saved with the reward token appended: 151643 + 23 = 151666 rows,
-        # while the upstream config.json still says 152064 -> override before loading
+        # The override MUST go into ``text_config`` (see the module docstring): the outer
+        # ``config.vocab_size`` is not what the text model reads, and getting this wrong
+        # silently random-initialises the token embeddings.
         config = AutoConfig.from_pretrained(str(path))
-        config.vocab_size = 151666
+        config.vocab_size = CHECKPOINT_VOCAB
+        config.text_config.vocab_size = CHECKPOINT_VOCAB
         self.model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
             str(path), config=config, torch_dtype=dtype,
-            ignore_mismatched_sizes=True).to(device).eval()
-        self.processor = AutoProcessor.from_pretrained(str(path), min_pixels=MIN_PIXELS,
+            ignore_mismatched_sizes=False).to(device).eval()
+        self.processor = AutoProcessor.from_pretrained(str(path), padding_side="right",
+                                                       min_pixels=MIN_PIXELS,
                                                        max_pixels=MAX_PIXELS)
         self.processor.tokenizer.add_special_tokens({"additional_special_tokens": [REWARD_TOKEN]})
         self.reward_token_id = self.processor.tokenizer.convert_tokens_to_ids(REWARD_TOKEN)
+        n_embed = int(self.model.get_input_embeddings().weight.shape[0])
+        if n_embed != len(self.processor.tokenizer) or n_embed != CHECKPOINT_VOCAB:
+            raise RuntimeError(
+                f"token embedding table ({n_embed}) does not match the tokenizer "
+                f"({len(self.processor.tokenizer)}); the checkpoint would be partially random")
 
         state = load_file(str(Path(path) / "model.safetensors"), device="cpu")
         self.heads = nn.ModuleList([_build_head() for _ in range(2)])

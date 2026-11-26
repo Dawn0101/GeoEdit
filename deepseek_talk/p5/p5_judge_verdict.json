@@ -1,0 +1,58 @@
+{
+ "created": "2026-11-26T21:08:46",
+ "n_images": 540,
+ "n_boot": 2000,
+ "lam": 1.0,
+ "verdict": {
+  "clip_d": {
+   "passed": false,
+   "checks": {
+    "src_not_best": true,
+    "e1a_wrong": false,
+    "e1b_noise": false,
+    "e1c_reverse": false
+   }
+  },
+  "er_dim1": {
+   "passed": false,
+   "checks": {
+    "src_not_best": false,
+    "e1a_wrong": true,
+    "e1b_noise": true,
+    "e1c_reverse": true
+   }
+  },
+  "er_dim2": {
+   "passed": false,
+   "checks": {
+    "src_not_best": false,
+    "e1a_wrong": true,
+    "e1b_noise": true,
+    "e1c_reverse": true
+   }
+  },
+  "q_follow": {
+   "passed": false,
+   "checks": {
+    "src_not_best": true,
+    "e1a_wrong": false,
+    "e1b_noise": false,
+    "e1c_reverse": false
+   }
+  },
+  "q_keep": {
+   "passed": false,
+   "checks": {
+    "src_not_best": false,
+    "e1a_wrong": true,
+    "e1b_noise": true,
+    "e1c_reverse": true
+   }
+  }
+ },
+ "primary_passing": [],
+ "verdict_reason": {
+  "clip_d": "amplitude meter per P4 §2; re-checked here at matched lambda only for the side-by-side table",
+  "rule": "§1.3: a judge may be used as the semantic metric only if all four checks pass; if both pass, Qwen is primary and EditReward secondary; if none passes, stop and export 50 side-by-side examples for the PI."
+ }
+}

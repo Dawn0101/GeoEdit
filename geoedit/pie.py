@@ -32,6 +32,7 @@ class PieSample:
     editing_instruction: str
     editing_type_id: str
     rle_mask: Tuple[int, ...]
+    blended_word: str = ""  # "bicycle bicycle" -- the edited word in src / in tar
 
 
 def strip_brackets(text: str) -> str:
@@ -52,6 +53,7 @@ def load_mapping(pie_root: Path = DEFAULT_PIE_ROOT) -> Dict[str, PieSample]:
             editing_instruction=item.get("editing_instruction", ""),
             editing_type_id=str(item["editing_type_id"]),
             rle_mask=tuple(item["mask"]),
+            blended_word=item.get("blended_word", ""),
         )
     return out
 
