@@ -9,6 +9,27 @@
 |---|---|---|---|---|
 | v1 | `v1` | 用部分（TV-unbalanced）最优传输估计"哪里该改"，拿它的边际当软 mask 混合源图与 proposal | ✗ **负结果**：背景偏差是高频纹理重绘（空间容忍无余量），且传输计划根本没被用到 | 2026-11-24 |
 | v2 | `v2` | 一步编辑到底"改得够不够"、迭代（Picard）能不能把它推得更远 | ✗ **负结果**：λ 在 ≈1–1.5 饱和；Picard 被 λ 曲线支配；唯一正向发现是**多噪声平均**（+0.8 dB @ 匹配 CLIP），收益来自降方差而非不动点收敛 | 2026-11-24 |
+| v3 | `v3` | 用 N 次噪声的**统计量**决定"在哪改"（逐像素 SNR 权重），用**单次样本**决定"改成什么" | ✗ **负结果（诊断清楚）**：SNR 权重不是定位器（AUROC 0.49）——平均能量与方差在编辑区**同比放大**（8.19 vs 8.27），比值恒为常数；DiffEdit 式能量 mask 能到 0.86。掩码只沿前沿滑动、不推出新前沿。P3d：**平均有语义代价**（CLIP-D +0.0156）但**匹配前沿后不占优**；模型自己的似然比验证器**无语义信息**。方法线收掉，不开 P4 | 2026-11-26 |
+
+## v3 有什么
+
+想法一页纸：[`docs/ideas/v3-push-pull-variance.md`](docs/ideas/v3-push-pull-variance.md)｜预注册：[`docs/handoff/v3_p3.md`](docs/handoff/v3_p3.md)、[`docs/handoff/v3_p3d.md`](docs/handoff/v3_p3d.md)
+
+| 类别 | 文件 | 说明 |
+|---|---|---|
+| **方法** | `geoedit/masks.py` | `snr_weight`（主方法）、DiffEdit 式、单次能量、AUROC/IoU、方差分解 |
+| | `geoedit/noise_ops.py`、`reward.py` | 源自洽噪声（不动点）、对偶噪声、选样本；逐像素似然比图 |
+| **实验** | `scripts/30_p3a_build_and_eval.py` | P3a：700 图 × 163 变体 = **114,100 次评测**（`--prep` 重算 fp32 残差）|
+| | `31_p3a_analyze.py`、`32_p3b_noise.py`、`33_p3c_refine_pilot.py` | 判定 / 不动点噪声 / 粗到细 |
+| | `36_posthoc.py`、`38–41_p3d_*` | 事后：V12a-c、V2d、CLIP-D、best-of-4；P3d 的 D1/D2 |
+| **评测** | `geoedit/metrics.py` | 列名与官方 `evaluate.py` **逐项一致**（T-X3 < 1e-4）；新增 `evaluate_many` 批量 CLIP |
+| **统计** | `geoedit/stats.py` | 图级 bootstrap、均值曲线匹配、匹配 PSNR/CLIP 两向、`out_of_range` 不外推 |
+| **数据包** | `deepseek_talk/p3/`、`deepseek_talk/p3d/` | 报告 + 判定 json + 汇总 CSV（共 ~120 KB，无图片）|
+| **报告** | `report/REPORT_p3.md`、`REPORT_p3d.md`、`REPORT_interim_p3a.md`、`DEVIATIONS.md` | P3 主报告（含三处更正）/ P3d 定案 / 中间报告 / 18 条偏离 |
+
+**关键数字**（t=0.9, n=540）：CLIP-D 在 λ=1：V0 **0.0556**、V1（平均）0.0337、V2（GT mask）0.0461、V4（SNR）0.0199。
+mask 质量 AUROC（t=0.5）：DiffEdit 式 **0.858** > 单次 0.790 ≫ SNR 权重 **0.492**。
+best-of-4：oracle +1.81 dB、非 oracle（背景能量）**+1.39 dB**、随机 −0.04 dB。
 
 ## v2 有什么
 
