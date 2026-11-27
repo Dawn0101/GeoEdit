@@ -1,0 +1,26 @@
+# P8b 预注册：修正 P7 的三个实现 bug 之后的干净配方
+n_images: 200
+lam_list: [0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
+chord_w: 0.143          # delta/(t_s+delta), t_s=0.9, delta=0.15 -> 0.143*R(0.9)+0.857*R(0.75)
+mask: {source: "R(0.75) single seed, Gaussian sigma=2", norm: "quantile q30/q85 saturation"}
+compose: "out = (1-M)*x_s + M*prox   # UNSQUARED M"
+delta: "lam*M*(u + k*M^2*A75)/(1+k*M^2)   # convex mix, no global renormalisation"
+prox_t: 0.3
+
+variants:
+  - {name: b_k0,          k: 0.0, prox: masked, nfe: 5}
+  - {name: b_k05,         k: 0.5, prox: masked, nfe: 5}
+  - {name: b_k1,          k: 1.0, prox: masked, nfe: 5}
+  - {name: b_k1_fullprox, k: 1.0, prox: full,   nfe: 5}
+  - {name: b_k1_noprox,   k: 1.0, prox: none,   nfe: 4}
+
+axes:
+  direct_lam: 1.0
+  matched_dino: 0.031   # ChordEdit 在同 200 图上的 struct_dist
+bootstrap: 2000
+
+primary_tests:
+  - {name: "b_k1 vs ChordEdit（λ=1 直接同表）", a: "b_k1", b: "chord", expect: "只报告"}
+  - {name: "b_k1 vs ChordEdit（匹配全图 DINO）", a: "b_k1", b: "chord", expect: "只报告"}
+  - {name: "k=0（纯弦场，与 ChordEdit 1:1）vs k=1", a: "b_k1", b: "b_k0", expect: "只报告"}
+  - {name: "Masked-Prox vs Full-Prox（λ=1）", a: "b_k1", b: "b_k1_fullprox", expect: "只报告"}

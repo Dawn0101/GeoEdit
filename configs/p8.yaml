@@ -1,0 +1,32 @@
+# P8 预注册：把编辑场换成与 ChordEdit 相同的弦场（0.143·R(0.9) + 0.857·R(0.75)）
+# 200 图；4 次基础前向（t=0.9 / t=0.75 各 src+tar）+ 可选第 5 次 prox
+n_images: 200
+lam_list: [0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
+chord_t1: 0.9
+chord_t2: 0.75
+chord_w: 0.143          # delta/(t_s+delta), t_s=0.9, delta=0.15
+mask: {source: "R(0.75) single seed", sigma: 2.0}
+prox_t: 0.3
+prox_mask_gamma: 2.0
+
+variants:
+  - {name: c_k0,          k: 0.0, prox: masked, nfe: 5}
+  - {name: c_k05,         k: 0.5, prox: masked, nfe: 5}
+  - {name: c_k1,          k: 1.0, prox: masked, nfe: 5}
+  - {name: c_k1_noprox,   k: 1.0, prox: none,   nfe: 4}
+  - {name: c_k1_fullprox, k: 1.0, prox: full,   nfe: 5}
+  # ChordEdit 的对照复现（我们的代码路径、无掩码、无 SDS、全图 prox）
+  - {name: c_plain,       k: 0.0, prox: full,   nfe: 5}
+
+# ---- 匹配轴（按 PI 的要求废除"背景 PSNR 压到 19.8"的病态匹配）------------------
+axes:
+  direct_lam1: 1.0        # ① 标准工作点 λ=1 直接同表（与 ChordEdit 原生点比）
+  matched_dino: 0.031     # ② 匹配全图 DINO（ChordEdit 在同一 200 图上的 struct_dist）
+  matched_inmask: null    # ‖M_gt ⊙ δ‖ 匹配：chord 的 δ 需 VAE 反解，作为备选
+bootstrap: 2000
+
+primary_tests:
+  - {name: "弦场 + k=1 vs ChordEdit（λ=1 直接同表）", a: "c_k1", b: "chord", expect: "只报告"}
+  - {name: "弦场 + k=1 vs ChordEdit（匹配全图 DINO）", a: "c_k1", b: "chord", expect: "只报告"}
+  - {name: "k=0（纯弦场）vs k=1", a: "c_k1", b: "c_k0", expect: "只报告"}
+  - {name: "prox 的作用（λ=1）", a: "c_k1", b: "c_k1_noprox", expect: "只报告"}
