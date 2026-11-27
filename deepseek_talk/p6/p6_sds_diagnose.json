@@ -1,0 +1,29 @@
+{
+  "created": "2026-11-27T13:04:23",
+  "n_images": 700,
+  "medians": {
+    "e_over_R": 1.773297131061554,
+    "e_over_x": 1.0060211420059204,
+    "cos_A_R": 0.28481705486774445,
+    "cos_e_R": -0.27838462591171265,
+    "R_frac_random_in": 0.9643963314587602,
+    "A_frac_random_in": 0.5422005642642548,
+    "R_frac_random_out": 0.9718950227504359,
+    "A_frac_random_out": 0.5553448499505462,
+    "S_in_ratio_A_over_R": 32.71329081516913,
+    "snr_in_R": 0.036918102000354946,
+    "snr_in_A": 0.8443359914738253,
+    "auroc_meanR": 0.7187035623835802,
+    "auroc_meanA": 0.6496270299498919,
+    "auroc_passA": 0.6388869574383815
+  },
+  "gate": {
+    "degenerate_if_e_src_over_R_below": 0.2,
+    "require_frac_random_not_worse": true
+  },
+  "A_is_a_different_direction": true,
+  "A_more_repeatable_in_mask": true,
+  "proceed_to_k_sweep": true,
+  "reading": "If A is not more repeatable than R inside the mask, the pre-registered expectation is that k>0 does not improve the edit; the visual k-sweep still runs (the PI asked to see it) but the frontier stops at k=1.",
+  "note": "frac_random = V/(V+S) with V = mean(4 s^2) and S = mean(||mu||^2 - 4 s^2 / N) over the four t_h seeds; lower = more repeatable = better."
+}

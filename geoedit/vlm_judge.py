@@ -21,7 +21,7 @@ the bike rusty"), not the target caption.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Sequence, Tuple, Union
+from typing import Dict, List, Sequence, Tuple, Union
 
 import torch
 
@@ -37,6 +37,19 @@ _HEAD = ('The {first} image is the original photo. The {second} image is the res
 FOLLOW_QUESTION = "Question: does the {topic} image follow the instruction? Answer with one word, Yes or No."
 KEEP_QUESTION = ('Question: apart from "{obj}", is the rest of the {topic} image identical to the '
                  'other image? Answer with one word, Yes or No.')
+
+# ---- P6: same-source A/B ----------------------------------------------------------------
+# Both candidates are edits of the *same* source, so the question is a genuine preference
+# between two directions rather than an absolute rating (P5 showed the absolute form cannot
+# work: any large edit earns a "something changed" floor).  The two orders differ only in
+# which image is shown first; the wording follows the position, so the semantics are identical
+# and the position bias cancels in the mean.
+AB_HEAD = ('Two edited versions of the same photo are shown: image A is shown {pa}, image B {pb}.'
+           '\nThe editing instruction was: "{instr}"\n')
+AB_QUESTION = 'Question: which version better follows the instruction? Answer with one word, A or B.'
+# "A" / " A" and "B" / " B" are single tokens in the Qwen2.5 tokenizer (verified locally)
+A_IDS = (32, 362)
+B_IDS = (33, 425)
 
 
 class QwenYesNoJudge:
@@ -88,20 +101,26 @@ class QwenYesNoJudge:
         return {k: (v.to(self.device) if torch.is_tensor(v) else v) for k, v in batch.items()}
 
     @torch.no_grad()
-    def _score(self, texts: Sequence[str], images: Sequence[Tuple[object, object]],
-               batch_size: int = 4) -> List[float]:
+    def _score_groups(self, texts: Sequence[str], images: Sequence[Tuple[object, object]],
+                      ids_a: Sequence[int], ids_b: Sequence[int],
+                      batch_size: int = 4) -> List[float]:
+        """``logsumexp(ids_a) - logsumexp(ids_b)`` at the first answer position."""
         out: List[float] = []
         for start in range(0, len(texts), batch_size):
             batch = self._build(texts[start:start + batch_size], images[start:start + batch_size])
             logits = self.model(**batch, use_cache=False).logits.float()
-            # right padding -> the first answer position is the last real token
             lengths = (batch["attention_mask"].sum(dim=1) - 1).tolist()
             rows = logits[torch.arange(logits.shape[0]), torch.tensor(lengths, device=logits.device)]
             logp = torch.log_softmax(rows, dim=-1)
-            yes = torch.logsumexp(logp[:, list(YES_IDS)], dim=-1)
-            no = torch.logsumexp(logp[:, list(NO_IDS)], dim=-1)
-            out.extend((yes - no).cpu().tolist())
+            a = torch.logsumexp(logp[:, list(ids_a)], dim=-1)
+            b = torch.logsumexp(logp[:, list(ids_b)], dim=-1)
+            out.extend((a - b).cpu().tolist())
         return out
+
+    @torch.no_grad()
+    def _score(self, texts: Sequence[str], images: Sequence[Tuple[object, object]],
+               batch_size: int = 4) -> List[float]:
+        return self._score_groups(texts, images, YES_IDS, NO_IDS, batch_size=batch_size)
 
     def score_following(self, items, batch_size: int = 4, order: str = "forward") -> List[float]:
         """``items`` = ``(source PIL, edited PIL, instruction)`` -> logP(Yes) - logP(No)."""
@@ -126,3 +145,23 @@ class QwenYesNoJudge:
             texts.append(self._prompt(first, second, topic, question, instr, obj))
             images.append(pair)
         return self._score(texts, images, batch_size=batch_size)
+
+    # ------------------------------------------------------------------ #
+    # P6: same-source A/B (both orders, position bias cancels in the mean)
+    # ------------------------------------------------------------------ #
+    @torch.no_grad()
+    def score_ab(self, items, batch_size: int = 4) -> List[Dict[str, float]]:
+        """``items`` = ``(image_a, image_b, instruction)`` -> per item
+        ``{"s", "s_first", "s_second"}`` with ``s = logP(A) - logP(B)`` averaged over the two
+        show orders (positive = A follows the instruction better).
+        """
+        texts_ab, images_ab, texts_ba, images_ba = [], [], [], []
+        for a, b, instr in items:
+            texts_ab.append(AB_HEAD.format(pa="first", pb="second", instr=instr) + AB_QUESTION)
+            images_ab.append((a, b))
+            texts_ba.append(AB_HEAD.format(pa="second", pb="first", instr=instr) + AB_QUESTION)
+            images_ba.append((b, a))
+        s_first = self._score_groups(texts_ab, images_ab, A_IDS, B_IDS, batch_size=batch_size)
+        s_second = self._score_groups(texts_ba, images_ba, A_IDS, B_IDS, batch_size=batch_size)
+        return [{"s": 0.5 * (x + y), "s_first": x, "s_second": y}
+                for x, y in zip(s_first, s_second)]

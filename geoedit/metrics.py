@@ -53,6 +53,7 @@ METRIC_KEYS = (
     "mse_unedit",
     "ssim_unedit",
     "struct_dist",
+    "struct_dist_unedit",
     "clip_source_whole",
     "clip_target_whole",
     "clip_target_edit",
@@ -146,6 +147,13 @@ class PieMetrics:
             if bool((mask > 0).any()) else nan
         )
         out["struct_dist"] = float(calc.calculate_structure_distance(source, output, None, None))
+        # P6: DINO on the *background*, which is what the PIE-Bench tables call "DINO"
+        # (official ``evaluate.py`` -> ``structure_distance_unedit_part``).  The official
+        # implementation is called unmodified; we only pass the background masks.
+        out["struct_dist_unedit"] = (
+            float(calc.calculate_structure_distance(source, output, background, background))
+            if has_background else nan
+        )
         return out
 
     # ------------------------------------------------------------------ #
@@ -238,5 +246,9 @@ class PieMetrics:
                 row["clip_target_whole"] = float(clip_tar[k])
                 row["clip_target_edit"] = float(clip_edit[k]) if clip_edit is not None else nan
                 row["struct_dist"] = float(calc.calculate_structure_distance(source, output, None, None))
+                row["struct_dist_unedit"] = (
+                    float(calc.calculate_structure_distance(source, output, background, background))
+                    if has_background else nan
+                )
                 results.append(row)
         return results

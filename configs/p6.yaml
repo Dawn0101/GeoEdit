@@ -1,0 +1,66 @@
+# P6 预注册：Ours-4（Mask 内 SDS）＋ 同源 A/B 闸门 ＋ ChordEdit 同台
+# 全部在**看到数据之前**写定；判定时不得修改。改了要进 DEVIATIONS。
+
+# ---- Ours-4 的网格 -------------------------------------------------------------
+sigma_4nfe: 2.0            # L5 = Gaussian(sigma=2) on ||R0(0.5)||, P5 §2 选定
+k_list: [0.0, 0.5, 1.0, 2.0]   # 0 = 同族对照（平滑掩码版 V12）
+gamma_list: [1, 2]         # M**(gamma-1)：1 = 掩码内均匀加推，2 = 集中在核心
+lam_list: [0.5, 0.75, 1.0, 1.5, 2.0, 3.0]   # 沿用 P3 网格，不新增自由度
+# 实际跑的组合（k=0 与 gamma 无关，去重后 6 个；比全交叉少 2 个重复点）
+ours_variants:
+  - {name: ours4_k0_g1,  k: 0.0, gamma: 1}
+  - {name: ours4_k0p5_g1, k: 0.5, gamma: 1}
+  - {name: ours4_k1_g1,  k: 1.0, gamma: 1}
+  - {name: ours4_k2_g1,  k: 2.0, gamma: 1}
+  - {name: ours4_k1_g2,  k: 1.0, gamma: 2}
+  - {name: ours4_k2_g2,  k: 2.0, gamma: 2}
+primary_set: 700           # 主判定（匹配 PSNR 的 A/B）在 700 图上，与 ChordEdit 严格同表
+frontier_set: 200          # 曲线（λ 网格）在 200 图评测集上，省算力；A/B 仍用 700
+
+# ---- NFE 记账（双轨，见 REPORT_p6 §5）-------------------------------------------
+nfe:
+  ours4: 4                 # t_l 2 + t_h 2（A 复用 mu_tar，0 额外前向）
+  v0: 2
+  v12: 10                  # 4 seed @ t_l + 1 seed @ t_h
+  v2: 2
+  chord_transport_forwards: 4   # ChordEdit 的 _u_estimate 一次调用内含 4 个 batch 元素
+  chord_prox_forwards: 1
+  chord_paper_nfe: 2            # 官方口径（把上面 4 个算作 2 次评估）
+
+# ---- Stage 0 的 SDS 前置判定 ----------------------------------------------------
+# 若 A 主要是噪声（随机占比不低于 R）且 |e_src| 大于 |R|，则 k>0 等于往掩码里灌噪声：
+# 预注册"预期 k>0 不改善"，只跑到 k=1 就停，报告写"否"。
+sds_gate:
+  # 两条数字都在 `p6_sds_diagnose.json` 里；判定用"可重复性"，e_src 只用来判断 A 是否退化。
+  # 2026-11-27 修正（DEVIATIONS P6-D2）：初版写的是 `e_src_over_R_max: 1.0`（即"e_src 太*大*
+  # 就停"），方向写反了 —— 该阈值的本意是"e_src 太*小*说明 A≈R，k 只是重标定"，而"大"恰恰
+  # 说明 A 是**另一个方向**（对方法有利）。修正后：
+  degenerate_if_e_src_over_R_below: 0.2   # ||e_src||/||R|| < 0.2 -> A≈R，k 无新方向
+  require_frac_random_not_worse: true     # frac_random(A) < frac_random(R) 才继续（实质判据）
+
+# ---- 同源 A/B 闸门的效度（先做，过了才往下）--------------------------------------
+ab_validity:
+  C1_identical_pair: {stat: "|mean s| < 0.30 nat 且 CI 含 0"}
+  C2_order_antisymmetry: {stat: "spearman(s_first, -s_second) > 0.70 且 mean(s_first+s_second) 的 CI 含 0"}
+  C3_v2_vs_noise: {stat: "s > 0，CI 不含 0"}
+  C4_noise_vs_v2: {stat: "s < 0，CI 不含 0"}
+  C5_v0_vs_e1c:  {stat: "s > 0，CI 不含 0", note: "同幅度反向编辑；这是 P5 绝对闸门失败、A/B 必须过的一关"}
+  fail_action: "C1-C4 任一不过 → 闸门作废，退回四项官方指标 + 人工；C5 不过 → 停工写报告"
+
+# ---- 匹配背景 PSNR 的 A/B -------------------------------------------------------
+matched_psnr:
+  targets: [24.0, 26.0, 28.0]   # dB；只取所有变体共同支撑区间内的档
+  per_image_tolerance_db: 1.0   # |ΔPSNR| < 1 dB 的子集上再算一次
+  extrapolate: false
+
+# ---- 主判定（预注册）------------------------------------------------------------
+primary_tests:
+  - {name: "SDS 是否有效", a: "ours4_k1_g1", b: "ours4_k0_g1", expect: "s > 0 且 CI 不含 0"}
+  - {name: "k=2 vs k=1", a: "ours4_k2_g1", b: "ours4_k1_g1", expect: "只报告，不预设方向"}
+  - {name: "gamma 的核集中", a: "ours4_k1_g2", b: "ours4_k1_g1", expect: "只报告"}
+  - {name: "vs ChordEdit", a: "ours4", b: "chord", expect: "只报告，不预设方向"}
+  - {name: "vs V0", a: "ours4", b: "v0", expect: "只报告"}
+
+bootstrap: 2000
+exclude_categories: ['8', '9']      # 只用于"540 子集附表"，主集是 700
+checkpoint_every: 10

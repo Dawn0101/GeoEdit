@@ -17,7 +17,15 @@ fi
 
 rm -rf "$dir"
 echo "[clone] $repo @ $commit (sparse: evaluation only)"
-git clone --quiet --depth 1 --filter=blob:none --sparse "https://github.com/$repo" "$dir"
+# 本机直连 github 被拒；仓库里已配好 ghproxy.net 镜像（见 .git/config remote.mirror）。
+# 需要直连时加 USE_DIRECT=1。
+if [ "${USE_DIRECT:-0}" = "1" ]; then
+  url="https://github.com/$repo"
+else
+  url="https://ghproxy.net/https://github.com/$repo"
+fi
+echo "[url] $url"
+git clone --quiet --depth 1 --filter=blob:none --sparse "$url" "$dir"
 git -C "$dir" sparse-checkout set evaluation
 head_sha="$(git -C "$dir" rev-parse HEAD)"
 if [ "$head_sha" != "$commit" ]; then
