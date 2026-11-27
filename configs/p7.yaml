@@ -1,0 +1,45 @@
+# P7 预注册：Ours-5（与 ChordEdit 严格同为 5 次 UNet 前向）在 200 图上的对决
+# 判定阈值在看到数据之前写定。改了要进 DEVIATIONS。
+
+# ChordEdit 实测：transport 的 4 个 batch 元素 + 1 次 prox = **5 次前向**（见 REPORT_p6 §5.1）
+# Ours-5：t_h 2 次（src+tar）+ t_l 2 次（src+tar）+ prox 1 次（tar @ t_c=0.3）= **5 次**
+nfe_ours5: 5
+nfe_chord_measured: 5
+
+# ---- 三个短板的开关（每个都是 0 额外前向，除 prox 是 +1）----------------------------
+fusion_w_list: [0.0, 1.0]      # 0 = 只用高噪场（P6 的做法）；1 = 低噪场按范数对齐后等权融合
+gate_dir: [true, false]        # gamma_dir = max(0, cos(u_h, u_l))，PreciseEdit eq.9
+k: 1.0                         # P6 已定 k=1 是甜点
+gamma_core_list: [2, 3]        # A 的掩码指数 M**gamma（收紧到核心）
+energy_normalise: true         # ||delta|| 归一到 lam*||R_h||：修 k 项把步长撑爆的问题
+prox_t: 0.3                    # 第 5 次前向的时间步（与 ChordEdit 的 t_end 一致）
+prox_mask_gamma: 2.0           # 合成掩码用 M**gamma 收紧（软尾会把 prox 里的 e_src 漏进背景）
+sigma_4nfe: 2.0
+lam_list: [0.5, 1.0, 1.5, 2.0, 3.0]
+
+# ---- 变体表 ---------------------------------------------------------------------
+variants:
+  - {name: o5,            fusion_w: 1.0, gate: true,  gamma: 2, prox: masked, nfe: 5}
+  - {name: o5_fullprox,   fusion_w: 1.0, gate: true,  gamma: 2, prox: full,   nfe: 5}
+  - {name: o5_noprox,     fusion_w: 1.0, gate: true,  gamma: 2, prox: none,   nfe: 4}
+  - {name: o5_nogate,     fusion_w: 1.0, gate: false, gamma: 2, prox: masked, nfe: 5}
+  - {name: o5_g3,         fusion_w: 1.0, gate: true,  gamma: 3, prox: masked, nfe: 5}
+  - {name: o5_nofuse,     fusion_w: 0.0, gate: true,  gamma: 2, prox: masked, nfe: 5}
+
+# ---- 评测 -----------------------------------------------------------------------
+n_images: 200                    # 与 P6、ChordEdit 完全同一批 200 图
+metrics: [psnr_unedit, lpips_unedit, ssim_unedit, struct_dist_unedit, clip_target_edit]
+ab_instrument: diff              # P6 §2.2 通过效度的那一种（λ=1 五项全过）
+matched_psnr:
+  targets: [24.0, 26.0]
+  per_image_tolerance_db: 1.0
+bootstrap: 2000
+
+# ---- 主判定 ---------------------------------------------------------------------
+primary_tests:
+  - {name: "Ours-5 能否追上 ChordEdit", a: "o5", b: "chord", expect: "只报告；若 s > 0 且 CI 不含 0 则反超"}
+  - {name: "双尺度融合的作用", a: "o5", b: "o5_nofuse", expect: "只报告"}
+  - {name: "方向门控的作用", a: "o5", b: "o5_nogate", expect: "只报告"}
+  - {name: "核心收紧 gamma=3 vs 2", a: "o5_g3", b: "o5", expect: "只报告"}
+  - {name: "Masked-Prox vs 全图 prox", a: "o5", b: "o5_fullprox", expect: "o5 的 s > 0（背景保真）"}
+  - {name: "prox 是否值得那 1 NFE", a: "o5", b: "o5_noprox", expect: "只报告"}

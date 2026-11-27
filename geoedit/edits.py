@@ -78,3 +78,77 @@ def describe(R9, A9, M, k: float, gamma: float) -> Dict[str, float]:
     return {"R_norm": r_norm, "A_norm": a_norm, "cos_RA": cos,
             "rms_R_in_mask": r_in, "rms_A_in_mask": a_in,
             "mask_area_frac": float(sel.float().mean()), "k": float(k), "gamma": float(gamma)}
+
+
+# --------------------------------------------------------------------------------------- #
+# P7: Ours-5 -- dual-scale fusion, direction gating, energy-normalised core, masked prox
+# --------------------------------------------------------------------------------------- #
+def scale_match(u_h: torch.Tensor, u_l: torch.Tensor) -> torch.Tensor:
+    """Low-noise field rescaled to the high-noise field's norm (so fusion is about *direction*)."""
+    return u_l.float() * (u_h.float().norm() / u_l.float().norm().clamp_min(1e-12))
+
+
+def fuse_scales(u_h: torch.Tensor, u_l: torch.Tensor, w: float) -> torch.Tensor:
+    """``u = u_h + w * s * u_l`` with ``s = ||u_h|| / ||u_l||`` (``w=0`` disables the fusion)."""
+    if w <= 0.0:
+        return u_h.float()
+    return u_h.float() + float(w) * scale_match(u_h, u_l)
+
+
+def direction_gate(u_h: torch.Tensor, u_l: torch.Tensor) -> float:
+    """PreciseEdit eq. 9: ``max(0, cos(u_h, u_l))``, a per-image scalar (0 extra NFE)."""
+    a = u_h.float().flatten()
+    b = u_l.float().flatten()
+    cos = float((a @ b) / (a.norm() * b.norm()).clamp_min(1e-12))
+    return max(0.0, cos)
+
+
+def energy_normalise(delta: torch.Tensor, reference: torch.Tensor, lam: float) -> torch.Tensor:
+    """Rescale ``delta`` so that ``||delta|| == lam * ||reference||``.
+
+    This is the fix for the ``k>0`` blow-up: the SDS term has ``||e_src|| = 1.77 ||R||``, so
+    without it the step length grows with k and the image is destroyed.  After normalisation the
+    lambda grid controls the amplitude identically for every variant, so a matched-PSNR comparison
+    differs only in *direction and spatial profile*.
+    """
+    target = float(lam) * float(reference.float().norm())
+    return delta.float() * (target / delta.float().norm().clamp_min(1e-12))
+
+
+def ours5_delta(u: torch.Tensor, A_h: torch.Tensor, M: torch.Tensor, lam: float, k: float,
+                gamma: float = 2.0, reference: torch.Tensor | None = None) -> torch.Tensor:
+    """``lam * M * (u + k * M**gamma * A_h)``, optionally renormalised to ``lam * ||reference||``.
+
+    ``gamma`` is the exponent on the mask for the *attraction* term only (``gamma=2`` means the
+    SDS push is confined to the mask core), matching the P7 spec in ``configs/p7.yaml``.
+    """
+    m = M.float()
+    delta = m * (u.float() + float(k) * (m ** float(gamma)) * A_h.float())
+    delta = float(lam) * delta
+    if reference is not None:
+        return energy_normalise(delta, reference, lam)
+    return delta
+
+
+def masked_prox(x_s: torch.Tensor, y_edit: torch.Tensor, prox: torch.Tensor,
+                M: torch.Tensor) -> torch.Tensor:
+    """``(1 - M) * x_s + M * prox`` -- the 5th forward's spatially gated composite."""
+    m = M.float()
+    return (1.0 - m) * x_s.float() + m * prox.float()
+
+
+def prox_latent(model, y_edit: torch.Tensor, t_c: float, emb_tar: torch.Tensor,
+                eps: torch.Tensor) -> torch.Tensor:
+    """One UNet forward at ``t_c`` on the *target* branch, same noise realisation as the transport.
+
+    Identical to ChordEdit's ``prox`` / ``_pred_x0`` (verified: both use
+    ``timestep = round(t * max_timestep)`` and ``alpha = sqrt(abar)``), so Ours-5 and the
+    5-forward ChordEdit baseline are compared at the same NFE *and* the same prox recipe.
+    """
+    squeeze = y_edit.dim() == 3
+    y = y_edit.float().unsqueeze(0) if squeeze else y_edit.float()
+    e = eps.float().unsqueeze(0) if eps.dim() == 3 else eps.float()
+    a, b = model.ab(t_c)
+    z = float(a) * y + float(b) * e
+    out = model.x0_pred(z, t_c, emb_tar)
+    return out[0] if squeeze else out
