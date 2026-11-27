@@ -125,14 +125,15 @@ def matched(out_dir: Path, frontier: Path, targets: List[float]) -> int:
 
 
 def report_mode(out_dir: Path, n_boot: int, tol: float) -> int:
-    files = sorted(p for p in out_dir.glob("*.csv") if not p.name.startswith("validity"))
+    files = sorted(p for p in out_dir.glob("*.csv")
+                   if not p.name.startswith(("validity", "p6_", "matched_")))
     if not files:
         print("[report] no pair files")
         return 1
     rows = []
     for path in files:
         frame = pd.read_csv(path, dtype={"image_id": str, "category": str})
-        if "pair" not in frame.columns:
+        if "pair" not in frame.columns or "image_id" not in frame.columns:
             continue
         frame = frame.drop_duplicates(subset=["image_id", "pair"])
         for pair, block in frame.groupby("pair"):
