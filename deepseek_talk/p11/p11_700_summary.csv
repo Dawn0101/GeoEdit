@@ -1,0 +1,10 @@
+variant,psnr_unedit,lpips_unedit,struct_dist,clip_target_edit
+budedit,25.987,0.062,0.02,22.42
+erchord_mu1,22.467,0.119,0.029,22.455
+erchord_mu2,22.514,0.118,0.029,22.348
+official,22.451,0.121,0.03,22.575
+precise_a1,22.993,0.117,0.032,22.96
+precise_gamma,25.508,0.086,0.021,21.862
+scadA_a1,22.595,0.092,0.028,22.984
+scad_adapt,22.971,0.087,0.026,22.875
+scad_cleanbg,22.983,0.083,0.025,22.849

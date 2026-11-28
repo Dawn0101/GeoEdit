@@ -54,6 +54,7 @@ def x0(unet, z, t_idx, a, b, ctx):
     return (z - float(b) * eps) / float(a)
 
 
+@torch.no_grad()
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="configs/base.yaml")

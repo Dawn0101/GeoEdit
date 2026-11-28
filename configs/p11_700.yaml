@@ -1,0 +1,20 @@
+# P11 预注册：六方同底座（官方 ChordEdit pipeline_chord.py，SD-Turbo，seed=42，严格 5 NFE，200 图）
+n_images: 700
+nfe: 5
+t_h: 0.9
+t_l: 0.75
+t_c: 0.3
+chord_w: 0.1429
+mask: {sigma: 2.0, q_lo: 0.40, q_hi: 0.65}
+scad_adapt: {alpha_max: 1.5, r0: 0.5}
+
+variants:
+  - {name: official,      method: official}
+  - {name: erchord_mu1,   method: erchord, mu: 1.0}
+  - {name: erchord_mu2,   method: erchord, mu: 2.0}
+  - {name: budedit,       method: budedit, beta: 0.5}
+  - {name: precise_gamma, method: precise, k: 1.0, gate: true}
+  - {name: precise_a1,    method: precise, k: 1.0, gate: false}
+  - {name: scadA_a1,      method: scad, alpha: 1.0}
+  - {name: scad_adapt,    method: scad_adapt}
+  - {name: scad_cleanbg,  method: scad_cleanbg, alpha: 1.0}

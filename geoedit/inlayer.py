@@ -71,6 +71,25 @@ class _State:
         self.alpha: float = 0.0
         self.mga: float = 0.0
         self.edit_idx: Sequence[int] = ()
+        # capture: attn2 token-columns and attn1 self-attention maps
+        self.capture2: bool = False
+        self.capture1: bool = False
+        self.acc2: List[torch.Tensor] = []
+        self.acc1: Optional[torch.Tensor] = None
+        # per-layer cross-attention outputs, for the "relative difference" statistic r
+        self.o_src: List[torch.Tensor] = []
+        self.r_num: float = 0.0
+        self.r_den: float = 0.0
+        self.capture_o: Optional[str] = None
+        self._o_seen: Optional[int] = None
+
+    def clear_capture(self) -> None:
+        self.acc2 = []
+        self.acc1 = None
+        self.o_src = []
+        self.r_num = 0.0
+        self.r_den = 0.0
+        self._o_seen = None
 
     def reset(self) -> None:
         self.active = False
@@ -104,11 +123,87 @@ class SpatialAttnProcessor2_0:
         from diffusers.models.attention_processor import AttnProcessor2_0
         return AttnProcessor2_0()(attn, hidden_states, encoder_hidden_states, attention_mask, **kw)
 
+    @torch.no_grad()
+    def _record_o(self, attn, hidden_states, encoder_hidden_states, st, store: bool) -> None:
+        """Store O for the source call, or accumulate ||O_tar - O_src|| / ||O_tar|| for the target call."""
+        hs = hidden_states
+        if hs.ndim == 4:
+            b, c, h, w = hs.shape
+            hs = hs.view(b, c, h * w).transpose(1, 2)
+        if attn.norm_cross is not None:
+            encoder_hidden_states = attn.norm_encoder_hidden_states(encoder_hidden_states)
+        heads = attn.heads
+        q = _heads(attn.to_q(hs), heads)
+        k = _heads(attn.to_k(encoder_hidden_states), heads)
+        v = _heads(attn.to_v(encoder_hidden_states), heads)
+        logits = torch.bmm(q.float(), k.float().transpose(1, 2)) * float(attn.scale)
+        o = torch.bmm(torch.softmax(logits, dim=-1).to(q.dtype), v)
+        if store:
+            st.o_src.append(o.detach())
+            return
+        if st._o_seen is None:
+            st._o_seen = 0
+        i = st._o_seen
+        st._o_seen += 1
+        if i < len(st.o_src):
+            d = o - st.o_src[i].to(o.device)
+            st.r_num += float(d.float().norm() ** 2)
+            st.r_den += float(o.float().norm() ** 2)
+
+    @torch.no_grad()
+    def _record_cross(self, attn, hidden_states, encoder_hidden_states, st) -> None:
+        """Record the head-averaged attention mass on the edit-token columns at 64x64."""
+        hs = hidden_states
+        if hs.ndim == 4:
+            b, c, h, w = hs.shape
+            hs = hs.view(b, c, h * w).transpose(1, 2)
+        if attn.norm_cross is not None:
+            encoder_hidden_states = attn.norm_encoder_hidden_states(encoder_hidden_states)
+        b, hw, _ = hs.shape
+        heads = attn.heads
+        q = _heads(attn.to_q(hs), heads)
+        k = _heads(attn.to_k(encoder_hidden_states), heads)
+        logits = torch.bmm(q.float(), k.float().transpose(1, 2)) * float(attn.scale)
+        probs = torch.softmax(logits, dim=-1).mean(dim=0)          # [HW, 77]
+        g = int(round(hw ** 0.5))
+        cols = probs[:, list(st.edit_idx)].mean(dim=1).reshape(1, 1, g, g)
+        st.acc2.append(F.interpolate(cols.float(), size=(64, 64), mode="bilinear",
+                                     align_corners=False)[0, 0].clone())
+
+    def _self_attn_capture(self, attn, hidden_states, attention_mask=None, **kw):
+        """Record the (head-averaged) self-attention map at the 32x32 level, pass through unchanged."""
+        st = self.state
+        residual = hidden_states
+        input_ndim = hidden_states.ndim
+        if input_ndim == 4:
+            b, c, h, w = hidden_states.shape
+            hidden_states = hidden_states.view(b, c, h * w).transpose(1, 2)
+        out = self._stock(attn, hidden_states, None, attention_mask, **kw)
+        if hidden_states.shape[1] == 1024 and st.acc1 is None:
+            heads = attn.heads
+            q = _heads(attn.to_q(hidden_states), heads)
+            k = _heads(attn.to_k(hidden_states), heads)
+            logits = torch.bmm(q.float(), k.float().transpose(1, 2)) * float(attn.scale)
+            probs = torch.softmax(logits, dim=-1).mean(dim=0)
+            st.acc1 = probs.detach()
+        return out
+
     def __call__(self, attn, hidden_states, encoder_hidden_states=None, attention_mask=None,
                  temb=None, **kw):
         st = self.state
-        if not st.active or encoder_hidden_states is None:
+        if not getattr(attn, "is_cross_attention", False):
+            if st.capture1:
+                return self._self_attn_capture(attn, hidden_states, attention_mask, **kw)
             return self._stock(attn, hidden_states, encoder_hidden_states, attention_mask, **kw)
+        if not st.active:
+            if st.capture_o == "src":
+                self._record_o(attn, hidden_states, encoder_hidden_states, st, store=True)
+            elif st.capture_o == "tar":
+                self._record_o(attn, hidden_states, encoder_hidden_states, st, store=False)
+            out = self._stock(attn, hidden_states, encoder_hidden_states, attention_mask, **kw)
+            if st.capture2 and st.edit_idx:
+                self._record_cross(attn, hidden_states, encoder_hidden_states, st)
+            return out
         residual = hidden_states
         input_ndim = hidden_states.ndim
         if input_ndim == 4:
@@ -169,7 +264,7 @@ def install(unet) -> _State:
     """Replace every ``attn2`` processor; returns the shared state."""
     state = _State()
     for module in unet.modules():
-        if module.__class__.__name__ == "Attention" and getattr(module, "is_cross_attention", False):
+        if module.__class__.__name__ == "Attention":
             module.processor = SpatialAttnProcessor2_0(state)
     return state
 

@@ -32,9 +32,11 @@ COLUMNS = [
     ("off_k0", "ChordEdit<br><span class=nm>official 5 NFE</span>", "p9/off_k0", "off_k0"),
     ("m075_k0", "Ours P9<br><span class=nm>soft mask, double-gated</span>", "p9/m075_k0", "m075_k0"),
     ("plat_out", "Ours P10<br><span class=nm>plateau mask, single gate</span>", "p10/plat_out", "plat_out"),
-    ("scadA_a05", "Ours P10<br><span class=nm>SCAD-A alpha=0.5</span>", "p10/scadA_a05", "scadA_a05"),
-    ("scadA_a1", "Ours P10<br><span class=nm>SCAD-A alpha=1.0</span>", "p10/scadA_a1", "scadA_a1"),
-    ("scadB_a1", "Ours P10<br><span class=nm>SCAD-B alpha=1.0</span>", "p10/scadB_a1", "scadB_a1"),
+    ("erchord_mu1", "ER-Chord<br><span class=nm>equal-energy (mu=1)</span>", "p11/erchord_mu1", "erchord_mu1"),
+    ("budedit", "BudEdit<br><span class=nm>energy budget</span>", "p11/budedit", "budedit"),
+    ("precise_a1", "PreciseEdit<br><span class=nm>SCT, gamma=1</span>", "p11/precise_a1", "precise_a1"),
+    ("scadA_a1", "Ours P11<br><span class=nm>SCAD-A alpha=1, 5 NFE</span>", "p11/scadA_a1", "scadA_a1"),
+    ("scad_cleanbg", "Ours P11<br><span class=nm>SCAD + clean background</span>", "p11/scad_cleanbg", "scad_cleanbg"),
 ]
 KEYS = [c[0] for c in COLUMNS]
 
@@ -75,7 +77,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="configs/base.yaml")
     ap.add_argument("--out", default="results/p9/viewer")
-    ap.add_argument("--width", type=int, default=210)
+    ap.add_argument("--width", type=int, default=190)
     args = ap.parse_args()
     base = load_yaml(ROOT / args.config)
     out = ROOT / args.out
@@ -90,12 +92,16 @@ def main() -> int:
     frames += [pd.read_csv(p, dtype={"image_id": str}) for p in
                sorted(glob.glob(str(ROOT / base["output_root"] / "p10" / "frontier" /
                                      "per_image_shard*.csv")))]
+    frames += [pd.read_csv(p, dtype={"image_id": str}) for p in
+               sorted(glob.glob(str(ROOT / base["output_root"] / "p11" / "frontier" /
+                                     "per_image_shard*.csv")))]
     per = pd.concat(frames, ignore_index=True).drop_duplicates(subset=["image_id", "variant"])
     ab = pd.read_csv(ROOT / base["output_root"] / "p9" / "ab.csv",
                      dtype={"image_id": str}).drop_duplicates(subset=["image_id", "pair"])
     summary = pd.concat([
         pd.read_csv(ROOT / base["output_root"] / "p9" / "frontier" / "summary.csv"),
-        pd.read_csv(ROOT / base["output_root"] / "p10" / "frontier" / "summary.csv")],
+        pd.read_csv(ROOT / base["output_root"] / "p10" / "frontier" / "summary.csv"),
+        pd.read_csv(ROOT / base["output_root"] / "p11" / "frontier" / "summary.csv")],
         ignore_index=True).drop_duplicates(subset=["variant"], keep="last")
 
     ids = sorted(per.image_id.unique())
@@ -128,7 +134,7 @@ def main() -> int:
 
     label = {c[0]: c[1] for c in COLUMNS}
     trows = []
-    for key in ["off_k0", "m075_k0", "plat_out", "scadA_a05", "scadA_a1", "scadB_a1"]:
+    for key in ["off_k0", "erchord_mu1", "budedit", "precise_a1", "scadA_a1", "scad_cleanbg"]:
         r = summary[summary.variant == key]
         if r.empty:
             continue
