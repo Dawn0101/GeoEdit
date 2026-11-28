@@ -1,0 +1,31 @@
+# P10 预注册：层内空间引导（SCAD 原创 / MGA 文献）在官方 ChordEdit 底座上，严格 5 NFE，200 图
+n_images: 200
+nfe: 5
+t_h: 0.9
+t_l: 0.75
+t_c: 0.3
+chord_w: 0.1429          # 0.15/1.05，与 pipeline_chord.py 的 _u_estimate 一致
+mask:
+  source: "plateau of Gaussian(||R(t)||, sigma=2)"
+  sigma: 2.0
+  q_lo: 0.40             # 平顶：q65 以上全部饱和为 1.0（消除 0.61^2=0.37 的内部二次衰减）
+  q_hi: 0.65
+
+variants:
+  - {name: official,      hook: none,   trans_gate: false, out_gate: false}   # 官方原版
+  - {name: plat_out,      hook: none,   trans_gate: false, out_gate: true}    # 仅最终单次门控
+  - {name: plat_trans,    hook: none,   trans_gate: true,  out_gate: false}   # 仅 transport 单次门控
+  - {name: scadA_a05,     hook: SCAD_A, alpha: 0.5, trans_gate: false, out_gate: true}
+  - {name: scadA_a1,      hook: SCAD_A, alpha: 1.0, trans_gate: false, out_gate: true}
+  - {name: scadA_a2,      hook: SCAD_A, alpha: 2.0, trans_gate: false, out_gate: true}
+  - {name: scadB_a1,      hook: SCAD_B, alpha: 1.0, trans_gate: false, out_gate: true}
+  - {name: mga2_nomask,   hook: MGA,    mga: 2.0,   trans_gate: false, out_gate: false}
+  - {name: mga4_nomask,   hook: MGA,    mga: 4.0,   trans_gate: false, out_gate: false}
+  - {name: mga8_nomask,   hook: MGA,    mga: 8.0,   trans_gate: false, out_gate: false}
+  - {name: mga4_mask,     hook: MGA,    mga: 4.0,   trans_gate: false, out_gate: true}
+  - {name: scadmga_a1_l4, hook: AM,     alpha: 1.0, mga: 4.0, trans_gate: false, out_gate: true}
+
+axes:
+  direct: "all variants at their native setting (5 NFE, no extra lambda)"
+  matched_psnr: 22.02
+bootstrap: 2000
